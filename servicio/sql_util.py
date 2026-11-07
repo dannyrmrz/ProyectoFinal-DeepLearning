@@ -49,3 +49,18 @@ def extraer_sql(texto):
     if not inicio:
         return "SELECT 1"
     return _primera_sentencia(texto[inicio.start():]) or "SELECT 1"
+
+
+_ESCRITURA = re.compile(
+    r"\b(INSERT|UPDATE|DELETE|DROP|ALTER|CREATE|TRUNCATE|REPLACE|RENAME|GRANT|REVOKE|CALL|LOAD|OUTFILE|DUMPFILE)\b",
+    re.I,
+)
+
+
+def es_solo_lectura(sql):
+    sin_literales = re.sub(r"'(?:[^'\\]|\\.|'')*'|\"(?:[^\"\\]|\\.)*\"|`[^`]*`", "''", sql).strip().rstrip(";")
+    return (
+        bool(re.match(r"(SELECT|WITH)\b", sin_literales, re.I))
+        and ";" not in sin_literales
+        and not _ESCRITURA.search(sin_literales)
+    )
