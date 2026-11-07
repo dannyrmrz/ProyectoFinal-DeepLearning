@@ -7,11 +7,10 @@ Modelo: `Qwen/Qwen2.5-Coder-1.5B-Instruct` con el adapter LoRA del Proyecto 3 (`
 ## Estructura
 
 ```
-servicio/      modelo, API (FastAPI), interfaz (Gradio), registro de uso
+servicio/      modelo, API (FastAPI), página web, registro de uso
 modelo/        adapter LoRA del Proyecto 3
 tests/         pruebas de la API con modelo simulado
-despliegue/    README del Space
-scripts/       despliegue a Hugging Face Spaces
+scripts/       publicación con Cloudflare Tunnel
 docs/          secciones del documento técnico
 ```
 
