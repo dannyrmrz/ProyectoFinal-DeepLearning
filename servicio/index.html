@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Text-to-SQL</title>
+<style>
+  :root { --fondo: #f6f7f9; --panel: #fff; --texto: #1d2330; --suave: #5b6475; --borde: #d9dde4; --acento: #2563eb; --aviso: #b45309; }
+  @media (prefers-color-scheme: dark) {
+    :root { --fondo: #14171c; --panel: #1d2128; --texto: #e6e8ec; --suave: #9aa3b2; --borde: #333a45; --acento: #60a5fa; --aviso: #f59e0b; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--fondo); color: var(--texto); font: 15px/1.5 system-ui, sans-serif; }
+  main { max-width: 1100px; margin: 0 auto; padding: 24px 16px; }
+  h1 { margin: 0 0 4px; font-size: 1.5rem; }
+  p { margin: 0 0 16px; color: var(--suave); }
+  .rejilla { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  @media (max-width: 760px) { .rejilla { grid-template-columns: 1fr; } }
+  label { display: block; font-weight: 600; margin-bottom: 6px; }
+  textarea, input, pre { width: 100%; border: 1px solid var(--borde); border-radius: 8px; background: var(--panel); color: var(--texto); }
+  textarea { height: 420px; padding: 10px; font: 12px/1.4 ui-monospace, monospace; resize: vertical; }
+  input { padding: 10px; font: inherit; }
+  pre { min-height: 120px; padding: 12px; white-space: pre-wrap; font: 13px/1.5 ui-monospace, monospace; margin: 12px 0 8px; }
+  button { border: 1px solid var(--borde); border-radius: 8px; padding: 8px 14px; font: inherit; cursor: pointer; background: var(--panel); color: var(--texto); }
+  button.principal { background: var(--acento); border-color: var(--acento); color: #fff; margin-top: 10px; }
+  button:disabled { opacity: .5; cursor: wait; }
+  .ejemplos { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .ejemplos button { font-size: 13px; padding: 4px 10px; }
+  #estado { min-height: 1.5em; color: var(--suave); }
+  #estado.aviso { color: var(--aviso); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Text-to-SQL para MySQL</h1>
+  <p>Pega el esquema de tu base (<code>SHOW CREATE TABLE</code>) y escribe la pregunta en español. El modelo devuelve una consulta <code>SELECT</code>: revísala antes de ejecutarla.</p>
+  <div class="rejilla">
+    <div>
+      <label for="esquema">Esquema</label>
+      <textarea id="esquema" spellcheck="false"></textarea>
+    </div>
+    <div>
+      <label for="pregunta">Pregunta</label>
+      <input id="pregunta" placeholder="¿Cuántos productos hay por categoría?">
+      <div class="ejemplos" id="ejemplos"></div>
+      <button class="principal" id="generar">Generar SQL</button>
+      <pre id="sql"></pre>
+      <div id="estado"></div>
+      <button id="bien" disabled>👍 Me sirvió</button>
+      <button id="mal" disabled>👎 No me sirvió</button>
+    </div>
+  </div>
+</main>
+<script>
+const $ = id => document.getElementById(id);
+const PREGUNTAS = [
+  "¿Cuántos productos requieren receta médica?",
+  "¿Cuál es el precio promedio de los productos por categoría?",
+  "¿Qué sucursal vendió más en total durante 2025?",
+  "¿Qué empleados ganan más que el promedio de su sucursal?",
+];
+let idActual = "";
+
+const estado = (texto, aviso = false) => { $("estado").textContent = texto; $("estado").className = aviso ? "aviso" : ""; };
+const votos = activo => { $("bien").disabled = $("mal").disabled = !activo; };
+
+fetch("api/ejemplo").then(r => r.text()).then(t => $("esquema").value = t);
+for (const p of PREGUNTAS) {
+  const b = document.createElement("button");
+  b.textContent = p;
+  b.onclick = () => $("pregunta").value = p;
+  $("ejemplos").append(b);
+}
+
+$("generar").onclick = async () => {
+  const esquema = $("esquema").value.trim(), pregunta = $("pregunta").value.trim();
+  if (!esquema || !pregunta) return estado("Escribe el esquema y la pregunta.", true);
+  $("generar").disabled = true; votos(false); $("sql").textContent = "";
+  estado("Generando… (en CPU tarda entre 10 y 40 s)");
+  try {
+    const r = await fetch("api/sql", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ esquema, pregunta }) });
+    if (!r.ok) throw new Error(r.status === 422 ? "Entrada inválida (esquema ≤ 20,000 y pregunta ≤ 500 caracteres)." : `Error ${r.status}`);
+    const d = await r.json();
+    idActual = d.id;
+    if (d.solo_lectura) { $("sql").textContent = d.sql; estado(`Generada en ${d.segundos} s · id ${d.id}`); }
+    else estado("La consulta generada no era de solo lectura y se bloqueó.", true);
+    votos(true);
+  } catch (e) { estado(e.message, true); }
+  $("generar").disabled = false;
+};
+
+const votar = correcto => async () => {
+  votos(false);
+  const r = await fetch("api/feedback", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: idActual, correcto }) });
+  estado(r.ok ? "Gracias, registramos tu respuesta." : "No se pudo registrar el voto.", !r.ok);
+};
+$("bien").onclick = votar(true);
+$("mal").onclick = votar(false);
+</script>
+</body>
+</html>

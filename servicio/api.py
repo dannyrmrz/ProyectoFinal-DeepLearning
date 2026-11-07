@@ -5,16 +5,14 @@ import uuid
 from contextlib import asynccontextmanager
 from pathlib import Path
 
-import gradio as gr
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import PlainTextResponse
+from fastapi.responses import FileResponse, PlainTextResponse
 from pydantic import BaseModel, Field
 
 from . import modelo, registro
-from .interfaz import crear_interfaz
 from .sql_util import es_solo_lectura
 
-ESQUEMA_EJEMPLO = (Path(__file__).parent / "ejemplo_farmacia.sql").read_text(encoding="utf-8")
+CARPETA = Path(__file__).parent
 
 
 class Solicitud(BaseModel):
@@ -83,4 +81,11 @@ def api_registros():
     return registro.ARCHIVO.read_text(encoding="utf-8") if registro.ARCHIVO.exists() else ""
 
 
-app = gr.mount_gradio_app(app, crear_interfaz(consultar, votar, ESQUEMA_EJEMPLO), path="/")
+@app.get("/api/ejemplo", response_class=PlainTextResponse)
+def api_ejemplo():
+    return (CARPETA / "ejemplo_farmacia.sql").read_text(encoding="utf-8")
+
+
+@app.get("/")
+def inicio():
+    return FileResponse(CARPETA / "index.html")

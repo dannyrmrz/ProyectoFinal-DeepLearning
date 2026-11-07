@@ -44,8 +44,9 @@ def test_feedback_y_metricas(cliente):
 
 
 def test_salud_e_interfaz(cliente):
+    assert "CREATE TABLE" in cliente.get("/api/ejemplo").text
     assert cliente.get("/api/salud").json()["modelo_base"].startswith("Qwen")
-    assert cliente.get("/").status_code == 200
+    assert "Generar SQL" in cliente.get("/").text
 
 
 @pytest.mark.parametrize("sql,esperado", [
