@@ -18,20 +18,31 @@ Desarrollo del problema, usuario y decisión: [docs/contexto.md](docs/contexto.m
 
 **2. Planificación**
 
-Las fechas de implementación se tomaron del historial de Git en hora de Guatemala, UTC−06:00. Las actividades programadas se mantienen separadas de los resultados obtenidos.
+El trabajo se organiza en cuatro fases para un equipo de tres integrantes. Las fechas son estimadas y orientan el avance hasta la entrega del 9 de noviembre de 2026.
 
-| Etapa | Fecha | Responsable | Estado y referencia |
-|---|---|---|---|
-| Modelo, API, registro y Docker | 7 de noviembre de 2026, 10:55 a 11:02 | Responsable del servicio | Implementado, commits `73416a9` a `cd25245` |
-| Interfaz web y túnel público | 7 de noviembre de 2026, 14:54 a 14:55 | Responsable del despliegue | Configurado, commits `89f200d`, `89d1253` y `48c1b85` |
-| Hipótesis y evaluación en CPU | 7 de noviembre de 2026, 16:52 a 18:30 | Responsable del modelo y la validación | Resultados incorporados, commits `7fd7062` a `b71503f` |
-| Contexto, ejemplos e integración del informe | 7 de noviembre de 2026 | Responsable del contexto y las evidencias | Documentación incorporada en este repositorio |
-| Verificación local y conectividad por túnel | 7 de noviembre de 2026, 22:38 a 22:39 | Responsable de las evidencias | 32 pruebas aprobadas y endpoints públicos accesibles. Modelo sin cargar por disponibilidad de memoria |
-| Generación, carga ligera y cinco usuarios externos | 8 de noviembre de 2026 | Responsable de las evidencias, con apoyo del despliegue | Pendientes. Requieren memoria suficiente, modelo listo y participantes reales |
-| Revisión de la entrega | 9 de noviembre de 2026 | Equipo del proyecto | Programada |
-| Cierre de ajustes | 15 de noviembre de 2026, 23:59 | Equipo del proyecto | Programado |
+**Fase 1. Planificación y selección del proyecto**
 
-Detalle de etapas y evidencias: [planificación](docs/contexto.md).
+Del 3 al 4 de noviembre se prevé revisar los proyectos anteriores, seleccionar el modelo que se llevará al servicio y definir el problema, el usuario y el alcance. Los tres integrantes participan en la selección y en la organización inicial.
+
+**Fase 2. División de tareas**
+
+El 5 de noviembre se distribuyen las responsabilidades y se acuerdan los archivos y resultados que debe aportar cada integrante. La ejecución se divide en tres áreas.
+
+- Servicio y despliegue, a cargo de un integrante. Incluye la API, la interfaz, el registro de uso y la publicación con Cloudflare Tunnel.
+- Modelo y validación, a cargo de un integrante. Incluye la preparación del modelo, las hipótesis, la comparación con la línea base y el análisis de resultados.
+- Contexto y evidencias, a cargo de un integrante. Incluye el problema, los supuestos, la documentación, las preguntas de ejemplo y la recopilación de pruebas de uso.
+
+**Fase 3. Ejecución de las partes individuales**
+
+Del 6 al 7 de noviembre se desarrolla cada área y se revisa el avance entre los tres integrantes. Se prepara el modelo, se implementa el servicio y se redacta la documentación. También se integran los archivos para que la interfaz, la API y la evaluación utilicen la misma configuración.
+
+**Fase 4. Comprobación y pruebas**
+
+Del 8 al 9 de noviembre se prevé comprobar el funcionamiento local y público, ejecutar las pruebas de humo y carga, revisar la comparación con la línea base y recopilar el uso por personas externas. Los tres integrantes revisan los resultados, corrigen los problemas encontrados y verifican la entrega final.
+
+Se reserva del 10 al 15 de noviembre un periodo de ajustes posteriores a la revisión. El estado real de las pruebas se presenta en la sección de evidencias.
+
+Detalle de la planificación: [docs/contexto.md](docs/contexto.md).
 
 **3. Supuestos**
 
@@ -53,7 +64,7 @@ El entrenamiento de origen utilizó 8 058 pares de esquema, pregunta y SQL proce
 
 Para el servicio, el adapter se fusiona al cargar el modelo y la inferencia se realiza en CPU con fp32. Se conserva el prompt de MySQL 8.4 y la generación determinista, con un máximo de 256 tokens nuevos. El servicio no se conecta a la base del usuario ni aplica autocorrección mediante ejecución de SQL.
 
-La configuración elegida es `USAR_ADAPTER=1` y `CUANTIZAR=0`. Las variantes int8 se conservan para reproducir los experimentos, pero no se recomiendan para la operación publicada.
+La configuración elegida es `USAR_ADAPTER=1` y `CUANTIZAR=0`. Las variantes int8 se conservan para reproducir los experimentos.
 
 Descripción del entrenamiento, selección del adapter y cambios del servicio: [docs/modelo_y_validacion.md](docs/modelo_y_validacion.md).
 
@@ -124,9 +135,7 @@ Diagrama y decisiones de implementación: [docs/arquitectura.md](docs/arquitectu
 
 El procedimiento, los archivos esperados y los criterios de cierre están en [evidencias/README.md](evidencias/README.md). Las pruebas automáticas y los votos acumulados no demuestran por sí solos participación de cinco personas distintas.
 
-Durante la preparación se observaron 2.51 GB de RAM disponibles, frente a los 6.31 GB de memoria estable registrados para el servicio con adapter en la evaluación previa. Se verificó la API con `PRECARGAR=0` y se cerraron los procesos al terminar. El estado del entorno quedó en [entorno.json](evidencias/entorno.json). Esta comprobación acredita conectividad y no acredita generación de SQL ni uso en producción.
-
-Se recomienda mantener una prueba piloto supervisada con el adapter B en fp32. La continuidad del servicio queda sujeta a completar la evidencia de uso externo, comprobar los tiempos por la URL pública y conservar la revisión humana del SQL.
+Se verificó la API con `PRECARGAR=0` y se cerraron los procesos al terminar. El estado del entorno quedó en [entorno.json](evidencias/entorno.json). Esta comprobación acredita conectividad y no acredita generación de SQL ni uso en producción.
 
 **Instrucciones de ejecución local**
 

@@ -36,9 +36,9 @@ Se conservan fecha, identificador, pregunta, SQL generado, tiempo y resultado de
 
 Se requieren al menos cinco participantes distintos, sesiones reales por la URL pública y votos asociados a sus consultas. Se contrastan los identificadores del registro de sesiones con los eventos de consulta y feedback. El contador de votos no identifica personas y puede incluir votos repetidos. Las pruebas automáticas no sustituyen la participación externa.
 
-**10. ¿Cuál es la recomendación y qué se necesita para mantener el servicio?**
+**10. ¿Qué comprobaciones quedan pendientes?**
 
-Se recomienda mantener una prueba piloto supervisada con el adapter B en fp32, revisión de SQL y horarios acordados. Antes de ampliar su uso se deben completar las sesiones externas, revisar la prueba de humo y la carga ligera, y comprobar el tiempo de respuesta por el túnel. La dirección pública cambia al reiniciar y no ofrece disponibilidad continua. También se requiere controlar el acceso a los registros si se deja de utilizar únicamente información de demostración.
+Quedan pendientes las tres generaciones de la prueba de humo, la carga ligera de 20 solicitudes y las sesiones con al menos cinco personas externas. Estas comprobaciones requieren el modelo cargado y una URL pública activa. Las respuestas de salud, métricas y registros obtenidas durante la revisión acreditan conectividad, pero no sustituyen las pruebas de generación ni los votos de los participantes.
 
 **Referencias**
 

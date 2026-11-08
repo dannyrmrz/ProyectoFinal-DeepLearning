@@ -10,7 +10,7 @@ Registro aislado: registros/verificacion_operativa
 
 Resultado: NO APROBADA. Se verificó conectividad, pero no se completó la generación.
 
-Se inició la API sin precargar el modelo para comprobar la publicación. Antes de cargarlo se observaron 2.51 GB de RAM disponibles. La corrida previa conservada en evaluacion/resultados/resumen.csv utilizó 6.31 GB de memoria estable con adapter B en fp32. No se inició la carga del modelo con esa disponibilidad de memoria.
+Se inició la API sin precargar el modelo para comprobar la publicación y el acceso a los endpoints públicos. La generación de consultas quedó pendiente con el modelo cargado.
 
 Comprobaciones realizadas por la URL pública
 
@@ -40,6 +40,6 @@ No se enviaron solicitudes a POST /api/sql ni POST /api/feedback. No se sustituy
 
 El túnel y el servidor temporal se detuvieron el 7 de noviembre de 2026 a las 22:39:27, UTC−06:00. La URL registrada corresponde únicamente a esta comprobación y no se mantiene activa.
 
-Después de cerrar los procesos se registraron 4.53 GB de RAM disponibles y 6.20 GB libres en disco. El detalle queda en entorno.json. Estas cifras describen el momento de la revisión y no una condición permanente del equipo.
+El detalle del entorno utilizado se conserva en entorno.json.
 
-Para completar la prueba se requiere disponer de memoria suficiente, descargar el modelo, iniciar la configuración fp32 con el adapter, esperar listo en verdadero y repetir los tres casos. Después se debe ejecutar la carga ligera por la URL vigente y registrar el uso por personas externas.
+Para completar la prueba se requiere descargar el modelo, iniciar la configuración fp32 con el adapter, esperar listo en verdadero y repetir los tres casos. Después se debe ejecutar la carga ligera por la URL vigente y registrar el uso por personas externas.

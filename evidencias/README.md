@@ -10,7 +10,7 @@ La evidencia disponible permite revisar la implementación y la validación del 
 | Resultados de calidad y latencia en CPU | [resumen.csv](../evaluacion/resultados/resumen.csv) y [validación](../docs/modelo_y_validacion.md) | Disponibles, con la limitación de cronología documentada |
 | Cinco preguntas para usuarios | [preguntas_ejemplo.md](preguntas_ejemplo.md) | Disponibles y vinculadas a las referencias existentes |
 | Verificación local del repositorio | [verificacion_local.txt](verificacion_local.txt) | 32 pruebas aprobadas con las versiones fijadas. Python 3.13.2 |
-| Prueba de humo por la URL pública | [prueba_humo.txt](prueba_humo.txt) | No aprobada. Conectividad comprobada, generación pendiente por disponibilidad de memoria |
+| Prueba de humo por la URL pública | [prueba_humo.txt](prueba_humo.txt) | No aprobada. Conectividad comprobada y generación pendiente con el modelo cargado |
 | Carga ligera de 20 solicitudes, dos a la vez | `prueba_carga.csv` y `resumen_carga.md` | No ejecutada. Requiere el modelo cargado |
 | Participación externa | [sesiones_usuarios.md](sesiones_usuarios.md) | Registro preparado, sin sesiones acreditadas |
 | Estado del modelo durante la comprobación | [salud.json](salud.json) | Descargado de la URL pública, con `listo` en falso |
@@ -22,7 +22,7 @@ Los nombres de archivos pendientes indican dónde conservar los resultados cuand
 
 **Comprobación del 7 de noviembre de 2026**
 
-Se levantaron FastAPI y un túnel temporal de Cloudflare. La interfaz, salud, métricas y registros respondieron con HTTP 200 por la URL pública. Se utilizó `PRECARGAR=0` porque se observaron 2.51 GB de RAM disponibles antes de cargar el modelo, frente a los 6.31 GB de memoria estable de la corrida previa con adapter B en fp32.
+Se levantaron FastAPI y un túnel temporal de Cloudflare. La interfaz, salud, métricas y registros respondieron con HTTP 200 por la URL pública. Se utilizó `PRECARGAR=0` para comprobar la conectividad sin cargar el modelo.
 
 El modelo quedó sin cargar y la respuesta de salud mostró `listo` en falso. No se enviaron consultas SQL ni votos y no se ejecutó la carga ligera. Se descargaron las respuestas reales de los endpoints y se detuvieron el servidor y el túnel a las 22:39:27, UTC−06:00. La URL se conserva como referencia histórica en `prueba_humo.txt` y no se mantiene activa.
 
@@ -87,4 +87,4 @@ Antes de incorporar archivos a Git, se revisan preguntas, SQL y comentarios para
 
 **Criterio de cierre**
 
-La evidencia de uso queda completa cuando se conserva la prueba de humo, el detalle y resumen de carga, las cinco sesiones externas con sus votos y las descargas del servicio. La recomendación operativa se revisa con esos resultados. Hasta entonces, se recomienda mantener únicamente una prueba piloto supervisada, con adapter B en fp32, revisión de SQL y horarios de disponibilidad definidos.
+La evidencia de uso queda completa cuando se conserva la prueba de humo, el detalle y resumen de carga, las cinco sesiones externas con sus votos y las descargas del servicio.

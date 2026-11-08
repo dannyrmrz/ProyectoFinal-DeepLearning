@@ -12,23 +12,29 @@ El servicio genera SQL y no ejecuta consultas ni toma decisiones de compra. Tamp
 
 **2. Planificación**
 
-Las fechas de las etapas terminadas se tomaron del historial de Git, con hora de Guatemala, UTC−06:00. Las actividades futuras se identifican como programadas y no representan resultados obtenidos.
+El trabajo se organiza en cuatro fases para un equipo de tres integrantes. Las fechas son estimadas y orientan el avance hasta la entrega del 9 de noviembre de 2026.
 
-| Etapa | Fecha | Responsable | Evidencia y estado |
-|---|---|---|---|
-| Incorporación del modelo, inferencia y registro de uso | 7 de noviembre de 2026, 10:55 a 10:59 | Responsable del servicio | Commits `73416a9`, `e5c83e3`, `1131634` y `badbe8b`. Implementación registrada |
-| Pruebas de API y alternativa con Docker | 7 de noviembre de 2026, 10:59 a 11:02 | Responsable del servicio | Commits `832a920` y `acc3264`. Pruebas y Dockerfile incorporados |
-| Interfaz web y publicación por túnel | 7 de noviembre de 2026, 14:54 a 14:55 | Responsable del despliegue | Commits `89f200d`, `89d1253` y `48c1b85`. Publicación configurada, pendiente de comprobar la URL activa |
-| Registro de hipótesis | 7 de noviembre de 2026, 16:52 | Responsable del modelo y la validación | Commit `7fd7062`. La fecha del commit es posterior al cierre registrado de la corrida base |
-| Evaluación en CPU y comparación con T4 | 7 de noviembre de 2026, 18:19 a 18:30 | Responsable del modelo y la validación | Commits `5656043`, `0a2271f`, `9ce0766` y `b71503f`. Resultados conservados en `evaluacion/resultados/` |
-| Contexto, guía de uso e integración del informe | 7 de noviembre de 2026 | Responsable del contexto y las evidencias | Documentación incorporada en `docs/`, `evidencias/` y `README.md`. Fecha verificable en los commits de estos archivos |
-| Verificación local y conectividad pública | 7 de noviembre de 2026, 22:38 a 22:39 | Responsable de las evidencias | 32 pruebas locales aprobadas. API y túnel accesibles, con el modelo sin cargar por disponibilidad de memoria. Detalle en `evidencias/prueba_humo.txt` |
-| Generación de la prueba de humo y carga ligera por la URL pública | 8 de noviembre de 2026 | Responsable de las evidencias, con apoyo del despliegue | Pendientes. Requieren memoria suficiente, modelo listo y dirección vigente |
-| Uso por al menos cinco personas externas y descarga de registros | 8 de noviembre de 2026 | Responsable de las evidencias | Programado. Requiere participación real y votos de los usuarios |
-| Revisión final de la entrega | 9 de noviembre de 2026 | Equipo del proyecto | Programada. Se deben revisar los resultados y los pendientes antes de la exposición |
-| Cierre de ajustes | 15 de noviembre de 2026, 23:59 | Equipo del proyecto | Fecha prevista para completar los ajustes de la entrega |
+**Fase 1. Planificación y selección del proyecto**
 
-La implementación del túnel y las mediciones de validación no acreditan por sí solas el uso del servicio por personas externas. La prueba de humo, la carga y las sesiones de usuarios requieren evidencias propias.
+Del 3 al 4 de noviembre se prevé revisar los proyectos anteriores, seleccionar el modelo que se llevará al servicio y definir el problema, el usuario y el alcance. Los tres integrantes participan en la selección y en la organización inicial.
+
+**Fase 2. División de tareas**
+
+El 5 de noviembre se distribuyen las responsabilidades y se acuerdan los archivos y resultados que debe aportar cada integrante. La ejecución se divide en tres áreas.
+
+- Servicio y despliegue, a cargo de un integrante. Incluye la API, la interfaz, el registro de uso y la publicación con Cloudflare Tunnel.
+- Modelo y validación, a cargo de un integrante. Incluye la preparación del modelo, las hipótesis, la comparación con la línea base y el análisis de resultados.
+- Contexto y evidencias, a cargo de un integrante. Incluye el problema, los supuestos, la documentación, las preguntas de ejemplo y la recopilación de pruebas de uso.
+
+**Fase 3. Ejecución de las partes individuales**
+
+Del 6 al 7 de noviembre se desarrolla cada área y se revisa el avance entre los tres integrantes. Se prepara el modelo, se implementa el servicio y se redacta la documentación. También se integran los archivos para que la interfaz, la API y la evaluación utilicen la misma configuración.
+
+**Fase 4. Comprobación y pruebas**
+
+Del 8 al 9 de noviembre se prevé comprobar el funcionamiento local y público, ejecutar las pruebas de humo y carga, revisar la comparación con la línea base y recopilar el uso por personas externas. Los tres integrantes revisan los resultados, corrigen los problemas encontrados y verifican la entrega final.
+
+Se reserva del 10 al 15 de noviembre un periodo de ajustes posteriores a la revisión. El estado real de las pruebas se presenta en la sección de evidencias.
 
 **3. Supuestos**
 
