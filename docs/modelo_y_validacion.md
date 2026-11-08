@@ -49,6 +49,8 @@ No se reentrenó el modelo: el enunciado pide llevarlo a producción, y la evalu
 
 Las hipótesis, la métrica y los criterios están en [docs/hipotesis.md](hipotesis.md), commit `7fd7062`. Se conservan sin cambios. **Limitación de cronología:** el commit registra el 7 de noviembre de 2026 a las 16:52:59 (UTC−06:00), mientras que `base_servicio.json` fecha el final de la corrida base a las 16:43 del mismo día, sin zona horaria. Con la evidencia disponible no se puede acreditar un commit previo a la medición. Los resultados se reportan con esta limitación; no se alteró el historial ni las fechas originales.
 
+Hay un indicio a favor, aunque no verificable por terceros: según el sistema de archivos de la PC donde se midió, `docs/hipotesis.md` se creó el 7 de noviembre a las 16:10:05 y su última modificación tiene esa misma hora. El experimento empezó a las 16:24:03 (creación de su log). Es decir, el criterio se escribió unos 14 minutos antes de la primera medición, y el archivo que se subió en `7fd7062` es ese mismo, sin ediciones posteriores. El commit se hizo mientras la corrida del adapter estaba en curso. Las fechas del sistema de archivos son locales y modificables, así que se reportan como contexto y no como prueba.
+
 ### Método
 
 - **Conjunto:** validación propia del Proyecto 3. Son 40 preguntas sobre 2 esquemas que el modelo no vio al entrenar (`farmacia` y `evt_tix`): 12 fáciles, 14 medias y 14 difíciles, con peso 1 / 2 / 3.
@@ -59,7 +61,7 @@ Las hipótesis, la métrica y los criterios están en [docs/hipotesis.md](hipote
   - **Memoria residente del servicio.**
 - **Línea base:** el mismo modelo sin adapter (`USAR_ADAPTER=0`), con el mismo prompt.
 - **Entorno:** laptop Intel Core Ultra 5 125U (12 núcleos, 15 W, AVX2), 32 GB de RAM, PyTorch 2.15 CPU, fp32, generación greedy.
-- **Comprobación del puntuador:** las 40 referencias dan EX = 1.000. Se volvieron a puntuar las 160 predicciones CPU con MySQL 8.4.10; los aciertos coinciden con los CSV guardados. `proyecto3_t4.csv` contiene métricas agregadas históricas, no las predicciones T4 necesarias para verificar equivalencia pregunta por pregunta.
+- **Comprobación del puntuador:** las 40 referencias dan EX = 1.000. Se volvieron a puntuar las 160 predicciones CPU con MySQL 8.4.10; los aciertos coinciden con los CSV guardados. `proyecto3_t4.csv` contiene las métricas agregadas históricas. Las predicciones T4 pregunta por pregunta están en `evaluacion/resultados/proyecto3_t4/`, copiadas sin cambios del repositorio del Proyecto 3 (commit `0eaa760`). Al volver a puntuarlas con este evaluador dan exactamente 0.439 (base) y 0.646 (adapter B).
 
 ### Resultados
 
@@ -88,7 +90,16 @@ Detalle por pregunta en `evaluacion/resultados/<config>.csv`; resumen en `evalua
 
 **H1, de dónde sale la mejora.** El adapter gana 7 preguntas que el modelo base falla (4 difíciles: `WITH`, ventanas, subconsultas) y pierde 4 (3 fáciles). Como las difíciles pesan triple, la diferencia ponderada es de +12 puntos sobre 82. También reduce los errores de *columna o tabla inexistente* de 9 a 6. Con solo 40 preguntas, 7 contra 4 no es una diferencia estadísticamente concluyente por sí sola. Lo que la respalda es que coincide en dirección y tamaño con el Proyecto 3 (+0.207 en T4).
 
-**Comparación con T4.** La EX del modelo base coincide a tres decimales (0.439). El adapter B baja de 0.646 en T4 a 0.585 en CPU. Las métricas agregadas disponibles no permiten atribuir la diferencia a precisión numérica, hardware o cambios del servicio, ni demostrar consultas idénticas. Para aislar la causa se necesitan predicciones T4 por pregunta y una comparación controlada con las mismas versiones y pesos.
+**Comparación con T4.** `python -m evaluacion.comparar_t4 --puntuar` compara pregunta por pregunta las predicciones del servicio con las del Proyecto 3 (`evaluacion/resultados/comparacion_t4.md`):
+
+| Modelo | EX T4 | EX CPU | SQL idéntico | Preguntas con resultado distinto |
+|---|---|---|---|---|
+| Base | 0.439 | 0.439 | 40/40 | ninguna |
+| Adapter B | 0.646 | 0.585 | 37/40 | 18 (difícil) y 28 (media), ambas aciertan en T4 |
+
+El modelo base genera exactamente las mismas 40 consultas, así que el prompt, la extracción de SQL y la generación greedy del servicio se comportan igual que en el Proyecto 3. Con el adapter, 3 consultas divergen a mitad de la generación: en la 18 el modelo elige `p.precio` en lugar de `d.precio_unitario`; en la 28 omite la tabla `tkt`; en la 35 ambas versiones fallan. Esas 2 preguntas pesan 5 de 82 puntos, que es toda la diferencia (0.646 − 0.585 = 0.061).
+
+La explicación más probable es numérica: los pesos del adapter son los mismos, pero la T4 usó fp16 y el servicio usa fp32, de modo que el adapter fusionado no queda idéntico y basta un token distinto para que la generación greedy tome otro camino. No se midieron los márgenes de los logits en esos tokens, y las versiones de `transformers` y `peft` también pueden diferir, así que la causa exacta no está demostrada. Lo que sí muestra la comparación es la escala del efecto: diferencias de ~0.06 en este conjunto pueden venir de 2 preguntas.
 
 **Latencia.** La API mide el tiempo total de generación, sin separar prefill y decodificación. El diagnóstico adicional mide una pasada sobre cuatro prompts; su tiempo no debe interpretarse como una descomposición de la latencia de las 40 solicitudes. Las medianas observadas del modelo base y del adapter son próximas (28.1 y 27.0 s); no se midió el efecto de reducir el límite de tokens.
 

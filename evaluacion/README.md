@@ -39,6 +39,7 @@ python -m evaluacion.experimento
 Otros modos:
 
 - `python -m evaluacion.experimento --solo-memoria` mide la memoria máxima y la estable de cada configuración.
+- `python -m evaluacion.comparar_t4 [--puntuar]` compara pregunta por pregunta el servicio en CPU con las predicciones T4 del Proyecto 3 (`resultados/proyecto3_t4/`, copiadas del commit `0eaa760` de ese repositorio) y escribe `resultados/comparacion_t4.md`.
 - `python -m evaluacion.diagnostico_int8` compara token a token fp32 contra las variantes int8 (`resultados/diagnostico_int8.json`). Ejecútalo en un proceso nuevo, sin inferencias concurrentes; comprueba que la referencia no contiene capas int8. Los tiempos son de una pasada por prompt y pueden variar entre corridas.
 
 Evaluar un servicio que ya está corriendo (local o la URL pública):
@@ -59,6 +60,6 @@ python -m evaluacion.resumir
 
 Una predicción es correcta si al ejecutarla en MySQL devuelve el mismo resultado que la referencia: cada columna de la referencia debe aparecer en la predicción (las columnas extra no penalizan), los decimales se redondean a 2 y el orden de las filas solo importa cuando la pregunta lo pide. Pesos 1 / 2 / 3 para fácil / media / difícil.
 
-El puntuador adapta el del Proyecto 3 y busca correspondencias de columnas preservando las filas completas, incluso cuando varias columnas tienen la misma distribución. Las 40 consultas de referencia dan EX = 1.000; al volver a puntuar las 160 predicciones CPU se obtienen los aciertos guardados. Las métricas T4 son históricas y agregadas; sus predicciones no están incluidas.
+El puntuador adapta el del Proyecto 3 y busca correspondencias de columnas preservando las filas completas, incluso cuando varias columnas tienen la misma distribución. Las 40 consultas de referencia dan EX = 1.000; al volver a puntuar las 160 predicciones CPU se obtienen los aciertos guardados. Las predicciones T4 del Proyecto 3 (`resultados/proyecto3_t4/`) también se reproducen al volver a puntuarlas: 0.439 (base) y 0.646 (adapter B).
 
-La cronología disponible no acredita que el commit de hipótesis precediera a la corrida base. Véase la limitación documentada en `docs/modelo_y_validacion.md`; se conservan los criterios y registros originales.
+La cronología disponible no acredita que el commit de hipótesis precediera a la corrida base: el commit es posterior, aunque el archivo se escribió antes según el sistema de archivos local. Véase la limitación documentada en `docs/modelo_y_validacion.md`; se conservan los criterios y registros originales.

@@ -149,3 +149,14 @@ def test_diagnostico_carga_referencia_fp32(monkeypatch):
     monkeypatch.setattr(modelo, "cargar", cargar)
     with pytest.raises(RuntimeError, match="referencia comprobada"):
         diagnostico_int8.main()
+
+
+def test_comparacion_con_t4_por_pregunta():
+    from evaluacion import comparar_t4
+
+    for config, archivo, iguales in [("base", "base", 40), ("adapter", "adapter_b", 37)]:
+        cpu = pd.read_csv(evaluar.RESULTADOS / f"{config}.csv")
+        t4 = pd.read_csv(evaluar.RESULTADOS / "proyecto3_t4" / f"{archivo}.csv")
+        assert comparar_t4.comparar(cpu, t4)["sql_igual"].sum() == iguales
+    t4_b = pd.read_csv(evaluar.RESULTADOS / "proyecto3_t4" / "adapter_b.csv")
+    assert evaluar.ex_ponderada(t4_b) == pytest.approx(0.646, abs=5e-4)
