@@ -1,0 +1,37 @@
+{
+  "url": "https://willing-thriller-supply-feet.trycloudflare.com",
+  "comprobaciones": [
+    {
+      "ruta": "/",
+      "http": 200,
+      "bytes": 5103,
+      "fecha": "2026-11-07T23:10:16-06:00"
+    },
+    {
+      "ruta": "/api/ejemplo",
+      "http": 200,
+      "bytes": 3619,
+      "fecha": "2026-11-07T23:10:16-06:00"
+    },
+    {
+      "ruta": "/api/salud",
+      "http": 200,
+      "bytes": 122,
+      "fecha": "2026-11-07T23:10:16-06:00"
+    },
+    {
+      "ruta": "/api/metricas",
+      "http": 200,
+      "bytes": 174,
+      "fecha": "2026-11-07T23:10:16-06:00"
+    },
+    {
+      "ruta": "/api/registros",
+      "http": 200,
+      "bytes": 13162,
+      "fecha": "2026-11-07T23:10:17-06:00"
+    }
+  ],
+  "cierre": "2026-11-07T23:10:20-06:00",
+  "servidor_y_tunel_detenidos": true
+}

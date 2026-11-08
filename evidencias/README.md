@@ -1,6 +1,6 @@
 **7. Evidencias del servicio**
 
-La evidencia disponible permite revisar la implementación y la validación del modelo. Todavía no se acredita el pase a producción mediante uso por personas externas. Las mediciones existentes se obtuvieron con solicitudes secuenciales y no sustituyen la prueba de carga con dos solicitudes simultáneas.
+La evidencia disponible incluye la validación del modelo, la prueba de humo y la carga ligera por la URL pública. Todavía queda pendiente acreditar el uso por personas externas. Se conservan por separado las mediciones de validación secuencial y las de carga con dos solicitudes simultáneas.
 
 **Estado de las evidencias**
 
@@ -10,23 +10,26 @@ La evidencia disponible permite revisar la implementación y la validación del 
 | Resultados de calidad y latencia en CPU | [resumen.csv](../evaluacion/resultados/resumen.csv) y [validación](../docs/modelo_y_validacion.md) | Disponibles, con la limitación de cronología documentada |
 | Cinco preguntas para usuarios | [preguntas_ejemplo.md](preguntas_ejemplo.md) | Disponibles y vinculadas a las referencias existentes |
 | Verificación local del repositorio | [verificacion_local.txt](verificacion_local.txt) | 32 pruebas aprobadas con las versiones fijadas. Python 3.13.2 |
-| Prueba de humo por la URL pública | [prueba_humo.txt](prueba_humo.txt) | No aprobada. Conectividad comprobada y generación pendiente con el modelo cargado |
-| Carga ligera de 20 solicitudes, dos a la vez | `prueba_carga.csv` y `resumen_carga.md` | No ejecutada. Requiere el modelo cargado |
+| Prueba de humo por la URL pública | [prueba_humo.txt](prueba_humo.txt) y [humo_resultados.json](humo_resultados.json) | Aprobada. Tres consultas completadas con HTTP 200 y SQL de lectura |
+| Carga ligera de 20 solicitudes, dos a la vez | [prueba_carga.csv](prueba_carga.csv) y [resumen_carga.md](resumen_carga.md) | Completada. Cero errores, cero bloqueos y seis respuestas de 60 segundos o más |
 | Participación externa | [sesiones_usuarios.md](sesiones_usuarios.md) | Registro preparado, sin sesiones acreditadas |
-| Estado del modelo durante la comprobación | [salud.json](salud.json) | Descargado de la URL pública, con `listo` en falso |
-| Métricas y registro de la comprobación | [metricas_antes.json](metricas_antes.json), [metricas.json](metricas.json) y [registros.jsonl](registros.jsonl) | Descargados. Cero solicitudes, cero votos y registro vacío |
-| Recursos del equipo al finalizar | [entorno.json](entorno.json) | Disponibles. Corresponden a esta revisión, con el servidor detenido |
+| Estado del modelo durante la comprobación | [salud.json](salud.json) | Descargado de la URL pública, con `listo` en verdadero, adapter activo y fp32 |
+| Métricas y registro de la comprobación | [metricas_antes.json](metricas_antes.json), [metricas.json](metricas.json) y [registros.jsonl](registros.jsonl) | Descargados. 23 solicitudes, cero errores y cero votos |
+| Entorno de la sesión | [entorno.json](entorno.json) | Configuración registrada con el modelo cargado y cuatro hilos de CPU |
+| Endpoints públicos y cierre de la sesión | [sesion_publica.json](sesion_publica.json) | Cinco rutas con HTTP 200. Servidor y túnel detenidos al finalizar |
 | Capturas de funcionamiento e historial | `capturas/` | Pendientes de incorporación |
 
 Los nombres de archivos pendientes indican dónde conservar los resultados cuando se obtengan. Su presencia en esta tabla no acredita una prueba realizada.
 
 **Comprobación del 7 de noviembre de 2026**
 
-Se levantaron FastAPI y un túnel temporal de Cloudflare. La interfaz, salud, métricas y registros respondieron con HTTP 200 por la URL pública. Se utilizó `PRECARGAR=0` para comprobar la conectividad sin cargar el modelo.
+Se levantaron FastAPI, el modelo con adapter B en fp32 y un túnel temporal de Cloudflare. La interfaz, el esquema de ejemplo, salud, métricas y registros respondieron con HTTP 200 por la URL pública. Se utilizó `PRECARGAR=1` y el estado de salud confirmó que el modelo estaba listo antes de enviar consultas.
 
-El modelo quedó sin cargar y la respuesta de salud mostró `listo` en falso. No se enviaron consultas SQL ni votos y no se ejecutó la carga ligera. Se descargaron las respuestas reales de los endpoints y se detuvieron el servidor y el túnel a las 22:39:27, UTC−06:00. La URL se conserva como referencia histórica en `prueba_humo.txt` y no se mantiene activa.
+La prueba de humo completó sus tres consultas en 23.193, 27.847 y 33.844 segundos desde el cliente. La carga completó 20 solicitudes con dos en curso a la vez, sin errores ni bloqueos. Se obtuvo p50 de 50.838 segundos y p95 de 61.596 segundos. Seis respuestas superaron el objetivo de menos de 60 segundos.
 
-Para completar la evidencia se requiere repetir la prueba de humo con el modelo listo, ejecutar la carga y realizar las sesiones externas. Las descargas de esta comprobación no sustituyen los registros de esas sesiones.
+Se descargaron 23 eventos de consulta y las métricas finales, con cero votos. El servidor y el túnel se detuvieron a las 23:10:20, UTC−06:00. La URL se conserva como referencia de esta sesión y no se mantiene activa.
+
+Las pruebas automáticas no acreditan participación externa. Quedan pendientes las sesiones con al menos cinco personas distintas y sus votos, que deben conservar registros propios.
 
 **Preparación de la sesión**
 

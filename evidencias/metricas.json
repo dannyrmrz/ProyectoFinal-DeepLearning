@@ -1,1 +1,10 @@
-{"solicitudes":0,"errores":0,"latencia_p50":null,"latencia_p95":null,"tasa_solo_lectura":null,"votos":0,"tasa_correcto":null,"ultima_solicitud":null}
+{
+  "solicitudes": 23,
+  "errores": 0,
+  "latencia_p50": 49.43,
+  "latencia_p95": 61.26,
+  "tasa_solo_lectura": 1.0,
+  "votos": 0,
+  "tasa_correcto": null,
+  "ultima_solicitud": "2026-11-08T05:09:55+00:00"
+}

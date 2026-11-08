@@ -1,0 +1,34 @@
+{
+  "url": "https://willing-thriller-supply-feet.trycloudflare.com",
+  "inicio": "2026-11-07T23:01:01.893-06:00",
+  "solicitudes_previstas": 20,
+  "simultaneas": 2,
+  "tiempo_limite_cliente": 180,
+  "salud": {
+    "listo": true,
+    "modelo_base": "Qwen/Qwen2.5-Coder-1.5B-Instruct",
+    "usar_adapter": true,
+    "cuantizar": "0",
+    "segundos_carga": 155.6
+  },
+  "referencias": [
+    2,
+    4,
+    7,
+    10,
+    14
+  ],
+  "rondas": 4,
+  "fin": "2026-11-07T23:09:55.151-06:00",
+  "duracion_total_segundos": 533.257,
+  "solicitudes_enviadas": 20,
+  "completadas": 20,
+  "errores": 0,
+  "bloqueadas": 0,
+  "respuestas_60_segundos_o_mas": 6,
+  "latencia_p50_cliente": 50.838,
+  "latencia_p95_cliente": 61.596,
+  "latencia_max_cliente": 61.768,
+  "metodo_percentil": "rango mas cercano, posicion redondeada hacia arriba",
+  "observaciones_percentiles": 20
+}

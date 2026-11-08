@@ -4,7 +4,7 @@ Servicio que recibe un esquema MySQL 8.4 y una pregunta en español, y devuelve 
 
 Acceso local al iniciar el servidor: [http://127.0.0.1:7860](http://127.0.0.1:7860).
 
-Última URL pública verificada: [sticky-molecular-brick-wan.trycloudflare.com](https://sticky-molecular-brick-wan.trycloudflare.com), el 7 de noviembre de 2026 a las 22:38, UTC−06:00. Se comprobó la conectividad con el modelo sin cargar. El túnel se cerró al terminar la revisión y esta dirección no se mantiene activa. Cada nuevo arranque genera una URL temporal distinta.
+Última URL pública verificada: [willing-thriller-supply-feet.trycloudflare.com](https://willing-thriller-supply-feet.trycloudflare.com), el 7 de noviembre de 2026 entre las 22:58 y las 23:10, UTC−06:00. Se completaron las pruebas de humo y carga con el modelo listo. El túnel se cerró al terminar la sesión y esta dirección no se mantiene activa. Cada nuevo arranque genera una URL temporal distinta.
 
 **1. Problemática**
 
@@ -127,15 +127,17 @@ Diagrama y decisiones de implementación: [docs/arquitectura.md](docs/arquitectu
 | Validación del modelo por API en CPU | Disponible en [evaluacion/resultados/](evaluacion/resultados/) |
 | Esquema y cinco preguntas de uso | Disponibles en [preguntas_ejemplo.md](evidencias/preguntas_ejemplo.md) |
 | Pruebas locales con las dependencias fijadas | 32 aprobadas. Registro en [verificacion_local.txt](evidencias/verificacion_local.txt) |
-| Prueba de humo con tres preguntas por la URL pública | No aprobada. Se comprobó conectividad, pero el modelo no se cargó. Detalle en [prueba_humo.txt](evidencias/prueba_humo.txt) |
-| Carga ligera de 20 solicitudes, dos a la vez | No ejecutada. Requiere completar la carga del modelo |
+| Prueba de humo con tres preguntas por la URL pública | Aprobada, tres respuestas HTTP 200 y consultas de lectura. Detalle en [prueba_humo.txt](evidencias/prueba_humo.txt) |
+| Carga ligera de 20 solicitudes, dos a la vez | Completada sin errores ni bloqueos. Detalle en [resumen_carga.md](evidencias/resumen_carga.md) y [prueba_carga.csv](evidencias/prueba_carga.csv) |
 | Cinco participantes externos y sus votos | Pendiente, registro preparado en [sesiones_usuarios.md](evidencias/sesiones_usuarios.md) |
-| Descarga de salud, métricas y registros públicos | Disponible en [evidencias/](evidencias/), con `listo` en falso, cero solicitudes, cero votos y registro vacío |
+| Descarga de salud, métricas y registros públicos | Disponible en [evidencias/](evidencias/), con `listo` en verdadero, 23 solicitudes, cero errores y cero votos |
 | Capturas del servicio y del historial | Pendientes de incorporación |
 
 El procedimiento, los archivos esperados y los criterios de cierre están en [evidencias/README.md](evidencias/README.md). Las pruebas automáticas y los votos acumulados no demuestran por sí solos participación de cinco personas distintas.
 
-Se verificó la API con `PRECARGAR=0` y se cerraron los procesos al terminar. El estado del entorno quedó en [entorno.json](evidencias/entorno.json). Esta comprobación acredita conectividad y no acredita generación de SQL ni uso en producción.
+Las tres respuestas de humo llegaron en 23.193, 27.847 y 33.844 segundos desde el cliente. En la carga, la latencia p50 fue de 50.838 segundos y la p95 fue de 61.596 segundos. Seis de las 20 respuestas superaron el objetivo de menos de 60 segundos.
+
+Se utilizó el modelo real con el adapter B en fp32 y `PRECARGAR=1`. La sesión registró 23 consultas automáticas de lectura y ningún voto. Estas pruebas acreditan funcionamiento público y generación de SQL. La participación de personas externas sigue pendiente. El entorno y el cierre de los procesos quedaron registrados en [entorno.json](evidencias/entorno.json) y [sesion_publica.json](evidencias/sesion_publica.json).
 
 **Instrucciones de ejecución local**
 
@@ -145,16 +147,18 @@ Desde la raíz del repositorio, en PowerShell, se crea el entorno y se instalan 
 python -m venv .venv
 .\.venv\Scripts\python.exe -m pip install torch==2.15.0 --index-url https://download.pytorch.org/whl/cpu
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt -r requirements-dev.txt
+$env:HF_HOME = Join-Path (Get-Location) 'registros/cache_hf'
 $env:USAR_ADAPTER = '1'
 $env:CUANTIZAR = '0'
 .\.venv\Scripts\python.exe -m uvicorn servicio.api:app --host 127.0.0.1 --port 7860
 ```
 
-Se abre [http://127.0.0.1:7860](http://127.0.0.1:7860). En `/api/salud`, `listo` debe cambiar a verdadero al terminar la carga. La primera ejecución descarga los pesos y puede tardar más.
+Se abre [http://127.0.0.1:7860](http://127.0.0.1:7860). En `/api/salud`, `listo` debe cambiar a verdadero al terminar la carga. La primera ejecución descarga los pesos y puede tardar más. La caché local queda en `registros/cache_hf`, lo que permite reutilizar los pesos en los siguientes arranques.
 
 Para publicar con el script existente, `cloudflared` debe estar instalado y disponible en `PATH`. Se detiene primero cualquier servidor que ocupe el puerto 7860. El script inicia su propia instancia de uvicorn y mantiene el túnel hasta que se interrumpe la ejecución.
 
 ```powershell
+$env:HF_HOME = Join-Path (Get-Location) 'registros/cache_hf'
 .\scripts\publicar.ps1
 ```
 

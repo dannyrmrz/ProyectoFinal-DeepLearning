@@ -56,6 +56,6 @@ Estado: aprobado
 
 Las tres respuestas llegaron en menos de 60 segundos. Esta comprobación acredita disponibilidad y generación de consultas de lectura. No mide acierto por ejecución en MySQL ni participación de personas externas.
 
-La dirección utilizada es temporal y depende de que el servidor y el túnel permanezcan activos. Un nuevo arranque del túnel genera otra URL.
+El servidor y el túnel se detuvieron el 7 de noviembre de 2026 a las 23:10:20, UTC−06:00. La dirección utilizada corresponde a esta sesión y no se mantiene activa. Un nuevo arranque del túnel genera otra URL.
 
 El detalle del entorno utilizado se conserva en entorno.json. La carga ligera se registra por separado en prueba_carga.csv y las sesiones externas se documentan en sesiones_usuarios.md.

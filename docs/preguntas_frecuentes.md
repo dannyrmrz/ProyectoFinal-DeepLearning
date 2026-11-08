@@ -38,7 +38,7 @@ Se requieren al menos cinco participantes distintos, sesiones reales por la URL 
 
 **10. ¿Qué comprobaciones quedan pendientes?**
 
-Quedan pendientes las tres generaciones de la prueba de humo, la carga ligera de 20 solicitudes y las sesiones con al menos cinco personas externas. Estas comprobaciones requieren el modelo cargado y una URL pública activa. Las respuestas de salud, métricas y registros obtenidas durante la revisión acreditan conectividad, pero no sustituyen las pruebas de generación ni los votos de los participantes.
+Quedan pendientes las sesiones con al menos cinco personas externas y sus votos. Se completaron las tres consultas de humo y las 20 solicitudes de carga por una URL pública, con el modelo real y sin errores de API. Seis respuestas de carga superaron los 60 segundos. Las 23 consultas automáticas no acreditan usuarios externos y no sustituyen las valoraciones de los participantes.
 
 **Referencias**
 
