@@ -1,0 +1,67 @@
+{
+  "url": "https://willing-thriller-supply-feet.trycloudflare.com",
+  "inicio": "2026-11-07T22:58:48-06:00",
+  "commit": "84c17916e56050984d7aa85b8a3e47f73478fea7",
+  "salud": {
+    "listo": true,
+    "modelo_base": "Qwen/Qwen2.5-Coder-1.5B-Instruct",
+    "usar_adapter": true,
+    "cuantizar": "0",
+    "segundos_carga": 155.6
+  },
+  "casos": [
+    {
+      "numero": 1,
+      "referencia": 2,
+      "pregunta": "Lista el nombre y el precio de los productos que cuestan más de 100 quetzales, ordenados del más caro al más barato.",
+      "inicio": "2026-11-07T22:58:48-06:00",
+      "http": 200,
+      "respuesta": {
+        "id": "bfba9889c7ed",
+        "sql": "SELECT nombre, precio FROM productos WHERE precio > 100 ORDER BY precio DESC",
+        "solo_lectura": true,
+        "segundos": 23.03
+      },
+      "pasa_humo": true,
+      "error": "",
+      "segundos_cliente": 23.193,
+      "fin": "2026-11-07T22:59:11-06:00"
+    },
+    {
+      "numero": 2,
+      "referencia": 7,
+      "pregunta": "¿Cuántos productos hay en cada categoría? Devuelve el nombre de la categoría y la cantidad de productos.",
+      "inicio": "2026-11-07T22:59:11-06:00",
+      "http": 200,
+      "respuesta": {
+        "id": "a605c61effa0",
+        "sql": "SELECT c.nombre, COUNT(*) AS cantidad FROM categorias c JOIN productos p ON p.id_categoria = c.id_categoria GROUP BY c.id_categoria, c.nombre",
+        "solo_lectura": true,
+        "segundos": 27.38
+      },
+      "pasa_humo": true,
+      "error": "",
+      "segundos_cliente": 27.847,
+      "fin": "2026-11-07T22:59:39-06:00"
+    },
+    {
+      "numero": 3,
+      "referencia": 10,
+      "pregunta": "¿Cuántas unidades se han vendido de cada producto de la categoría Vitaminas? Devuelve el nombre del producto y las unidades.",
+      "inicio": "2026-11-07T22:59:39-06:00",
+      "http": 200,
+      "respuesta": {
+        "id": "1d9ac273e62a",
+        "sql": "SELECT p.nombre, SUM(d.cantidad) AS unidades FROM productos p JOIN detalle_venta d ON d.id_producto = p.id_producto WHERE p.id_categoria = (SELECT id_categoria FROM categorias WHERE nombre = 'Vitaminas') GROUP BY p.id_producto, p.nombre",
+        "solo_lectura": true,
+        "segundos": 33.67
+      },
+      "pasa_humo": true,
+      "error": "",
+      "segundos_cliente": 33.844,
+      "fin": "2026-11-07T23:00:13-06:00"
+    }
+  ],
+  "fin": "2026-11-07T23:00:13-06:00",
+  "aprobada": true
+}

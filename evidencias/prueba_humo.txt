@@ -1,45 +1,61 @@
 Prueba de humo del servicio público
 
-Fecha de consulta: 7 de noviembre de 2026, 22:38:33, UTC−06:00
-URL utilizada: https://sticky-molecular-brick-wan.trycloudflare.com
-Commit del servicio al iniciar: 05e8302
+Inicio: 7 de noviembre de 2026, 22:58:48, UTC−06:00
+Fin: 7 de noviembre de 2026, 23:00:13, UTC−06:00
+URL utilizada: https://willing-thriller-supply-feet.trycloudflare.com
+Commit del servicio al iniciar: 84c1791
 Servidor: uvicorn en 127.0.0.1:7860
 Túnel: cloudflared 2026.10.7, protocolo HTTP/2
-Configuración: USAR_ADAPTER=1, CUANTIZAR=0, PRECARGAR=0
-Registro aislado: registros/verificacion_operativa
+Configuración: USAR_ADAPTER=1, CUANTIZAR=0, PRECARGAR=1
+Hilos de CPU configurados: 4
+Registro aislado: registros/pruebas_reintento
 
-Resultado: NO APROBADA. Se verificó conectividad, pero no se completó la generación.
+Resultado: APROBADA. Tres consultas completadas de tres enviadas.
 
-Se inició la API sin precargar el modelo para comprobar la publicación y el acceso a los endpoints públicos. La generación de consultas quedó pendiente con el modelo cargado.
+Se inició el modelo real con el adapter B en fp32. Antes de enviar las consultas se verificó que el estado de salud indicara listo en verdadero, usar_adapter en verdadero y cuantizar en cero. La carga inicial tomó 155.6 segundos e incluyó la descarga de los pesos.
 
-Comprobaciones realizadas por la URL pública
+Comprobaciones realizadas
 
 GET /api/salud: HTTP 200
-GET /api/metricas antes de la comprobación: HTTP 200
-GET /: HTTP 200
-GET /api/registros: HTTP 200
-GET /api/metricas al terminar: HTTP 200
+POST /api/sql: tres respuestas HTTP 200
+Consultas no vacías que comienzan con SELECT: tres de tres
+Respuestas con solo_lectura en verdadero: tres de tres
+Consultas que superan la comprobación local de lectura: tres de tres
+Errores de conexión o de API: cero
 
 Respuesta de salud conservada en salud.json
-{"listo":false,"modelo_base":"Qwen/Qwen2.5-Coder-1.5B-Instruct","usar_adapter":true,"cuantizar":"0","segundos_carga":null}
+{"listo":true,"modelo_base":"Qwen/Qwen2.5-Coder-1.5B-Instruct","usar_adapter":true,"cuantizar":"0","segundos_carga":155.6}
 
-Las métricas iniciales y finales tienen cero solicitudes y cero votos. registros.jsonl se descargó vacío porque no se realizaron consultas SQL ni valoraciones en esta instancia.
+Las métricas iniciales se descargaron antes de las consultas y se conservan en metricas_antes.json. Las respuestas completas, incluido el SQL generado, quedan en humo_resultados.json.
 
-Generaciones previstas
+Resultados por consulta
 
 Caso 1: Lista el nombre y el precio de los productos que cuestan más de 100 quetzales, ordenados del más caro al más barato.
-Estado: no ejecutado. El modelo no estaba listo.
+Identificador: bfba9889c7ed
+HTTP: 200
+Tiempo del cliente: 23.193 segundos
+Tiempo del servicio: 23.03 segundos
+Solo lectura: verdadero
+Estado: aprobado
 
 Caso 2: ¿Cuántos productos hay en cada categoría? Devuelve el nombre de la categoría y la cantidad de productos.
-Estado: no ejecutado. El modelo no estaba listo.
+Identificador: a605c61effa0
+HTTP: 200
+Tiempo del cliente: 27.847 segundos
+Tiempo del servicio: 27.38 segundos
+Solo lectura: verdadero
+Estado: aprobado
 
 Caso 3: ¿Cuántas unidades se han vendido de cada producto de la categoría Vitaminas? Devuelve el nombre del producto y las unidades.
-Estado: no ejecutado. El modelo no estaba listo.
+Identificador: 1d9ac273e62a
+HTTP: 200
+Tiempo del cliente: 33.844 segundos
+Tiempo del servicio: 33.67 segundos
+Solo lectura: verdadero
+Estado: aprobado
 
-No se enviaron solicitudes a POST /api/sql ni POST /api/feedback. No se sustituyeron las generaciones por respuestas simuladas. La prueba de carga de 20 solicitudes tampoco se ejecutó, pues requiere el modelo cargado.
+Las tres respuestas llegaron en menos de 60 segundos. Esta comprobación acredita disponibilidad y generación de consultas de lectura. No mide acierto por ejecución en MySQL ni participación de personas externas.
 
-El túnel y el servidor temporal se detuvieron el 7 de noviembre de 2026 a las 22:39:27, UTC−06:00. La URL registrada corresponde únicamente a esta comprobación y no se mantiene activa.
+La dirección utilizada es temporal y depende de que el servidor y el túnel permanezcan activos. Un nuevo arranque del túnel genera otra URL.
 
-El detalle del entorno utilizado se conserva en entorno.json.
-
-Para completar la prueba se requiere descargar el modelo, iniciar la configuración fp32 con el adapter, esperar listo en verdadero y repetir los tres casos. Después se debe ejecutar la carga ligera por la URL vigente y registrar el uso por personas externas.
+El detalle del entorno utilizado se conserva en entorno.json. La carga ligera se registra por separado en prueba_carga.csv y las sesiones externas se documentan en sesiones_usuarios.md.
