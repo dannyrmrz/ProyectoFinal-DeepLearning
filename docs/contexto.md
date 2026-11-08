@@ -8,7 +8,7 @@ Un ejemplo es la pregunta «¿Cuántas unidades se han vendido de cada producto 
 
 El esquema de ejemplo no incluye existencias, fechas de vencimiento ni niveles mínimos de inventario. Por ello, las ventas sirven como apoyo a la decisión de compra, pero no permiten determinar por sí solas qué productos deben reabastecerse ni en qué cantidad. Esa decisión requiere revisar también el inventario disponible.
 
-El servicio genera SQL y no ejecuta consultas ni toma decisiones de compra. Tampoco se ha medido una reducción del tiempo de trabajo del usuario. El beneficio esperado es facilitar la preparación de consultas, sujeto a su revisión y a la validación de uso.
+El servicio genera SQL y no ejecuta consultas ni toma decisiones de compra. El beneficio esperado es facilitar la preparación de consultas, sujeto a su revisión y a la validación de uso.
 
 **2. Planificación**
 

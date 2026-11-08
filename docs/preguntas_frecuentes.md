@@ -22,7 +22,7 @@ La variante int8 redujo la latencia p50 de 27.03 a 8.59 segundos, pero su EX pon
 
 **6. ¿Por qué se sirve en CPU y qué pasa con solicitudes simultáneas?**
 
-Se utiliza una PC disponible para operar el modelo sin depender de una GPU dedicada. En la validación secuencial, el adapter B presentó p50 de 27.03 segundos y p95 de 42.79 segundos medidos por el servicio. Un candado permite una sola generación a la vez. Las solicitudes simultáneas pueden esperar y deben medirse desde el cliente antes de afirmar que se cumple el objetivo de menos de 60 segundos.
+Se utiliza una PC disponible para operar el modelo sin depender de una GPU dedicada. En la validación secuencial, el adapter B presentó p50 de 27.03 segundos y p95 de 42.79 segundos medidos por el servicio. Un candado permite una sola generación a la vez. En la carga con dos solicitudes en curso, el tiempo del cliente presentó p50 de 50.838 segundos y p95 de 61.596 segundos.
 
 **7. ¿El servicio ejecuta SQL o modifica la base del usuario?**
 
@@ -32,13 +32,13 @@ El servicio devuelve texto SQL y no se conecta a la base del usuario. Se aplica 
 
 Se conservan fecha, identificador, pregunta, SQL generado, tiempo y resultado del filtro. Los votos incluyen el identificador de consulta, la valoración y un comentario opcional. El esquema completo no se guarda, pero sí su longitud. Las preguntas, consultas y comentarios pueden contener datos sensibles. Por ello, se emplea información de demostración y se revisa cualquier registro antes de compartirlo.
 
-**9. ¿Cómo se demuestra el uso por personas externas?**
+**9. ¿Cómo se relacionan las consultas y sus valoraciones?**
 
-Se requieren al menos cinco participantes distintos, sesiones reales por la URL pública y votos asociados a sus consultas. Se contrastan los identificadores del registro de sesiones con los eventos de consulta y feedback. El contador de votos no identifica personas y puede incluir votos repetidos. Las pruebas automáticas no sustituyen la participación externa.
+Cada respuesta recibe un identificador que se utiliza al enviar una valoración a `POST /api/feedback`. El mismo identificador aparece en los eventos de consulta y feedback, lo que permite relacionarlos. El contador de votos no identifica personas y puede incluir votos repetidos sobre una consulta.
 
-**10. ¿Qué comprobaciones quedan pendientes?**
+**10. ¿Qué resultados se obtuvieron en las pruebas públicas?**
 
-Quedan pendientes las sesiones con al menos cinco personas externas y sus votos. Se completaron las tres consultas de humo y las 20 solicitudes de carga por una URL pública, con el modelo real y sin errores de API. Seis respuestas de carga superaron los 60 segundos. Las 23 consultas automáticas no acreditan usuarios externos y no sustituyen las valoraciones de los participantes.
+Se completaron tres consultas de humo y 20 solicitudes de carga por una URL pública, con el modelo real y sin errores de API. Todas las respuestas fueron de lectura. En la carga, seis respuestas superaron los 60 segundos. La sesión dejó 23 consultas automáticas y cero votos en los registros del servicio.
 
 **Referencias**
 

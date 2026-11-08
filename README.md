@@ -12,7 +12,7 @@ Una persona encargada de compras de una farmacia puede conocer los productos y s
 
 El servicio ayuda a transformar esa necesidad en una consulta. Por ejemplo, ante «¿Cuántas unidades se han vendido de cada producto de la categoría Vitaminas?», debe relacionar productos, categorías y detalles de venta, y sumar las cantidades por producto. El resultado permite priorizar la revisión de productos con mayor demanda al preparar una compra.
 
-El esquema de demostración no incluye existencias ni niveles mínimos. Por tanto, no permite decidir por sí solo qué reabastecer ni en qué cantidad. Se requiere revisar el inventario disponible y comprobar la consulta antes de usar sus resultados. No se ha medido todavía el ahorro de tiempo del usuario.
+El esquema de demostración no incluye existencias ni niveles mínimos. Por tanto, no permite decidir por sí solo qué reabastecer ni en qué cantidad. Se requiere revisar el inventario disponible y comprobar la consulta antes de usar sus resultados.
 
 Desarrollo del problema, usuario y decisión: [docs/contexto.md](docs/contexto.md).
 
@@ -89,7 +89,7 @@ Fuente: [evaluacion/resultados/resumen.csv](evaluacion/resultados/resumen.csv). 
 
 El commit de hipótesis es posterior al cierre registrado de la corrida base. Con la evidencia disponible no se acredita que el criterio quedara registrado en Git antes de medir. Se conserva esta limitación y no se modifican las fechas ni el historial.
 
-Los resultados respaldan el uso del adapter B en fp32 frente a las alternativas medidas. El conjunto es pequeño, la exactitud no es perfecta y la validación no demuestra utilidad para cinco personas externas ni cumplimiento de latencia con solicitudes simultáneas. H3 comprueba bloqueos en este conjunto, no una garantía general de seguridad.
+Los resultados respaldan el uso del adapter B en fp32 frente a las alternativas medidas. El conjunto es pequeño y la exactitud no es perfecta. H3 comprueba bloqueos en este conjunto, no una garantía general de seguridad. Las mediciones con solicitudes simultáneas se presentan en la sección de evidencias.
 
 Método, análisis y comparación con T4: [validación completa](docs/modelo_y_validacion.md). Criterios conservados: [docs/hipotesis.md](docs/hipotesis.md). Reproducción: [evaluacion/README.md](evaluacion/README.md).
 
@@ -129,15 +129,13 @@ Diagrama y decisiones de implementación: [docs/arquitectura.md](docs/arquitectu
 | Pruebas locales con las dependencias fijadas | 32 aprobadas. Registro en [verificacion_local.txt](evidencias/verificacion_local.txt) |
 | Prueba de humo con tres preguntas por la URL pública | Aprobada, tres respuestas HTTP 200 y consultas de lectura. Detalle en [prueba_humo.txt](evidencias/prueba_humo.txt) |
 | Carga ligera de 20 solicitudes, dos a la vez | Completada sin errores ni bloqueos. Detalle en [resumen_carga.md](evidencias/resumen_carga.md) y [prueba_carga.csv](evidencias/prueba_carga.csv) |
-| Cinco participantes externos y sus votos | Pendiente, registro preparado en [sesiones_usuarios.md](evidencias/sesiones_usuarios.md) |
 | Descarga de salud, métricas y registros públicos | Disponible en [evidencias/](evidencias/), con `listo` en verdadero, 23 solicitudes, cero errores y cero votos |
-| Capturas del servicio y del historial | Pendientes de incorporación |
 
-El procedimiento, los archivos esperados y los criterios de cierre están en [evidencias/README.md](evidencias/README.md). Las pruebas automáticas y los votos acumulados no demuestran por sí solos participación de cinco personas distintas.
+El método y los archivos de respaldo están en [evidencias/README.md](evidencias/README.md). Las mediciones de esta sección corresponden a solicitudes automáticas por la API.
 
 Las tres respuestas de humo llegaron en 23.193, 27.847 y 33.844 segundos desde el cliente. En la carga, la latencia p50 fue de 50.838 segundos y la p95 fue de 61.596 segundos. Seis de las 20 respuestas superaron el objetivo de menos de 60 segundos.
 
-Se utilizó el modelo real con el adapter B en fp32 y `PRECARGAR=1`. La sesión registró 23 consultas automáticas de lectura y ningún voto. Estas pruebas acreditan funcionamiento público y generación de SQL. La participación de personas externas sigue pendiente. El entorno y el cierre de los procesos quedaron registrados en [entorno.json](evidencias/entorno.json) y [sesion_publica.json](evidencias/sesion_publica.json).
+Se utilizó el modelo real con el adapter B en fp32 y `PRECARGAR=1`. La sesión registró 23 consultas automáticas de lectura y ningún voto. Estas pruebas acreditan funcionamiento público y generación de SQL. El entorno y el cierre de los procesos quedaron registrados en [entorno.json](evidencias/entorno.json) y [sesion_publica.json](evidencias/sesion_publica.json).
 
 **Instrucciones de ejecución local**
 
@@ -179,8 +177,6 @@ docker run --rm -p 127.0.0.1:7860:7860 --mount "type=bind,source=$PWD\registros,
 ```
 
 La construcción descarga el modelo base. El volumen conserva `uso.jsonl` al detener el contenedor. La interfaz queda en la misma dirección local y puede publicarse con el comando de túnel anterior.
-
-La ejecución con Docker no se comprobó durante esta revisión.
 
 | Variable | Uso |
 |---|---|

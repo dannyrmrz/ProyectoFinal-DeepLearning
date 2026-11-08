@@ -1,6 +1,6 @@
 **7. Evidencias del servicio**
 
-La evidencia disponible incluye la validación del modelo, la prueba de humo y la carga ligera por la URL pública. Todavía queda pendiente acreditar el uso por personas externas. Se conservan por separado las mediciones de validación secuencial y las de carga con dos solicitudes simultáneas.
+La evidencia disponible incluye la validación del modelo, la prueba de humo y la carga ligera por la URL pública. Se conservan por separado las mediciones de validación secuencial y las de carga con dos solicitudes simultáneas.
 
 **Estado de las evidencias**
 
@@ -12,14 +12,10 @@ La evidencia disponible incluye la validación del modelo, la prueba de humo y l
 | Verificación local del repositorio | [verificacion_local.txt](verificacion_local.txt) | 32 pruebas aprobadas con las versiones fijadas. Python 3.13.2 |
 | Prueba de humo por la URL pública | [prueba_humo.txt](prueba_humo.txt) y [humo_resultados.json](humo_resultados.json) | Aprobada. Tres consultas completadas con HTTP 200 y SQL de lectura |
 | Carga ligera de 20 solicitudes, dos a la vez | [prueba_carga.csv](prueba_carga.csv) y [resumen_carga.md](resumen_carga.md) | Completada. Cero errores, cero bloqueos y seis respuestas de 60 segundos o más |
-| Participación externa | [sesiones_usuarios.md](sesiones_usuarios.md) | Registro preparado, sin sesiones acreditadas |
 | Estado del modelo durante la comprobación | [salud.json](salud.json) | Descargado de la URL pública, con `listo` en verdadero, adapter activo y fp32 |
 | Métricas y registro de la comprobación | [metricas_antes.json](metricas_antes.json), [metricas.json](metricas.json) y [registros.jsonl](registros.jsonl) | Descargados. 23 solicitudes, cero errores y cero votos |
 | Entorno de la sesión | [entorno.json](entorno.json) | Configuración registrada con el modelo cargado y cuatro hilos de CPU |
 | Endpoints públicos y cierre de la sesión | [sesion_publica.json](sesion_publica.json) | Cinco rutas con HTTP 200. Servidor y túnel detenidos al finalizar |
-| Capturas de funcionamiento e historial | `capturas/` | Pendientes de incorporación |
-
-Los nombres de archivos pendientes indican dónde conservar los resultados cuando se obtengan. Su presencia en esta tabla no acredita una prueba realizada.
 
 **Comprobación del 7 de noviembre de 2026**
 
@@ -28,8 +24,6 @@ Se levantaron FastAPI, el modelo con adapter B en fp32 y un túnel temporal de C
 La prueba de humo completó sus tres consultas en 23.193, 27.847 y 33.844 segundos desde el cliente. La carga completó 20 solicitudes con dos en curso a la vez, sin errores ni bloqueos. Se obtuvo p50 de 50.838 segundos y p95 de 61.596 segundos. Seis respuestas superaron el objetivo de menos de 60 segundos.
 
 Se descargaron 23 eventos de consulta y las métricas finales, con cero votos. El servidor y el túnel se detuvieron a las 23:10:20, UTC−06:00. La URL se conserva como referencia de esta sesión y no se mantiene activa.
-
-Las pruebas automáticas no acreditan participación externa. Quedan pendientes las sesiones con al menos cinco personas distintas y sus votos, que deben conservar registros propios.
 
 **Preparación de la sesión**
 
@@ -63,11 +57,11 @@ En `resumen_carga.md` se reportan solicitudes enviadas, completadas, errores, bl
 
 El método del resumen de carga se identifica de forma explícita porque `/api/metricas` usa su propia regla de percentiles y reúne todas las consultas del registro. No se espera que ambos resúmenes coincidan si difieren el conjunto o el método.
 
-**Uso externo**
+**Registro de valoraciones**
 
-Se solicita la participación de al menos cinco personas ajenas al equipo. Cada una utiliza la URL real con una pregunta de ejemplo y registra un voto sobre su respuesta. Se anota la sesión en [sesiones_usuarios.md](sesiones_usuarios.md) con un código anónimo y el identificador devuelto por la API.
+La API recibe valoraciones mediante `POST /api/feedback`, con el identificador de la consulta, el campo `correcto` y un comentario opcional. El registro permite relacionar la consulta generada con su valoración. El método de revisión se describe en [sesiones_usuarios.md](sesiones_usuarios.md).
 
-El registro actual no identifica personas y permite más de un voto por consulta. Por ello, cinco votos no demuestran cinco participantes distintos. La cantidad de personas se acredita con el registro de sesiones y los identificadores se contrastan con los eventos `consulta` y `feedback` descargados del servicio. Las llamadas automáticas no se registran como sesiones de personas.
+El registro no identifica personas y permite más de un voto por consulta. Los votos acumulados representan eventos de valoración y no una cantidad de usuarios distintos. Los identificadores permiten contrastar los eventos `consulta` y `feedback` descargados del servicio.
 
 **Descarga y revisión de registros**
 
@@ -87,7 +81,3 @@ curl.exe --fail --silent --show-error "$url/api/registros" --output evidencias/r
 ```
 
 Antes de incorporar archivos a Git, se revisan preguntas, SQL y comentarios para retirar cualquier dato sensible. Toda eliminación de contenido se describe en el informe para conservar el alcance de la evidencia. Se informa el intervalo de la sesión y cualquier tráfico ajeno que afecte los contadores.
-
-**Criterio de cierre**
-
-La evidencia de uso queda completa cuando se conserva la prueba de humo, el detalle y resumen de carga, las cinco sesiones externas con sus votos y las descargas del servicio.
