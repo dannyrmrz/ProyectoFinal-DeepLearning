@@ -2,7 +2,7 @@ CREATE TABLE `categorias` (
   `id_categoria` int NOT NULL,
   `nombre` varchar(40) NOT NULL,
   PRIMARY KEY (`id_categoria`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='CategorÃ­as de producto';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Categorías de producto';
 
 CREATE TABLE `detalle_venta` (
   `id_venta` int NOT NULL,
@@ -36,8 +36,8 @@ CREATE TABLE `productos` (
   `nombre` varchar(80) NOT NULL,
   `id_categoria` int NOT NULL,
   `id_proveedor` int NOT NULL,
-  `precio` decimal(8,2) NOT NULL COMMENT 'Precio de venta al pÃºblico en quetzales',
-  `requiere_receta` tinyint(1) NOT NULL DEFAULT '0' COMMENT '1 si necesita receta mÃ©dica',
+  `precio` decimal(8,2) NOT NULL COMMENT 'Precio de venta al público en quetzales',
+  `requiere_receta` tinyint(1) NOT NULL DEFAULT '0' COMMENT '1 si necesita receta médica',
   PRIMARY KEY (`id_producto`),
   KEY `id_categoria` (`id_categoria`),
   KEY `id_proveedor` (`id_proveedor`),
@@ -48,7 +48,7 @@ CREATE TABLE `productos` (
 CREATE TABLE `proveedores` (
   `id_proveedor` int NOT NULL,
   `nombre` varchar(60) NOT NULL,
-  `pais` varchar(40) DEFAULT NULL COMMENT 'PaÃ­s de origen del proveedor',
+  `pais` varchar(40) DEFAULT NULL COMMENT 'País de origen del proveedor',
   PRIMARY KEY (`id_proveedor`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
@@ -56,7 +56,7 @@ CREATE TABLE `sucursales` (
   `id_sucursal` int NOT NULL,
   `nombre` varchar(60) NOT NULL,
   `ciudad` varchar(40) NOT NULL,
-  `fecha_apertura` date DEFAULT NULL COMMENT 'Fecha en que abriÃ³ la sucursal',
+  `fecha_apertura` date DEFAULT NULL COMMENT 'Fecha en que abrió la sucursal',
   PRIMARY KEY (`id_sucursal`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Sucursales de la cadena de farmacias';
 
