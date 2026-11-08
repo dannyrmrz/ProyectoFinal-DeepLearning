@@ -1,0 +1,123 @@
+id,db,nivel,pregunta,sql_ref,sql_pred,solo_lectura,segundos,segundos_cliente,error_api,correcto,error,error_mysql,categoria
+1,farmacia,facil,¿Cuántos productos requieren receta médica? Devuelve el total.,SELECT COUNT(*) AS total FROM productos WHERE requiere_receta = 1,SELECT SUM(requiere_receta) FROM productos,True,24.13,24.14,,True,,,correcto
+2,farmacia,facil,"Lista el nombre y el precio de los productos que cuestan más de 100 quetzales, ordenados del más caro al más barato.","SELECT nombre, precio FROM productos WHERE precio > 100 ORDER BY precio DESC","SELECT p.nombre, p.precio FROM productos p WHERE p.precio > 100 ORDER BY p.precio DESC",True,24.25,24.26,,True,,,correcto
+3,farmacia,facil,¿Cuál es el salario promedio de los cajeros? Devuelve el promedio.,SELECT AVG(salario) AS promedio FROM empleados WHERE puesto = 'cajero',SELECT AVG(salario) FROM empleados WHERE puesto = 'cajero',True,22.95,22.96,,True,,,correcto
+4,farmacia,facil,Muestra el nombre y la ciudad de las sucursales que abrieron de 2019 en adelante.,"SELECT nombre, ciudad FROM sucursales WHERE fecha_apertura >= '2019-01-01'","SELECT nombre, ciudad FROM sucursales WHERE fecha_apertura > '2019-01-01'",True,24.47,24.49,,True,,,correcto
+5,farmacia,facil,¿Cuántas ventas se pagaron con tarjeta? Devuelve el total.,SELECT COUNT(*) AS total FROM ventas WHERE metodo_pago = 'tarjeta',SELECT SUM(CASE WHEN metodo_pago = 'tarjeta' THEN cantidad ELSE 0 END) AS total FROM ventas,True,26.18,26.19,,False,1054: Unknown column 'cantidad' in 'field list',columna inexistente,columna o tabla inexistente
+6,farmacia,facil,Lista el nombre y el apellido de los empleados que no reportan a ningún jefe.,"SELECT nombre, apellido FROM empleados WHERE id_jefe IS NULL","SELECT nombre, apellido FROM empleados WHERE id_jefe IS NULL",True,24.53,24.55,,True,,,correcto
+7,farmacia,media,¿Cuántos productos hay en cada categoría? Devuelve el nombre de la categoría y la cantidad de productos.,"SELECT c.nombre, COUNT(*) AS cantidad FROM categorias c JOIN productos p ON p.id_categoria = c.id_categoria GROUP BY c.id_categoria, c.nombre","SELECT c.nombre AS categoria, COUNT(d.id_producto) AS cantidad_productos
+FROM categorias c
+JOIN detalle_venta d ON c.id_categoria = d.id_categoria
+GROUP BY c.id_categoria, c.nombre
+ORDER BY cantidad_productos DESC",True,44.9,44.92,,False,1054: Unknown column 'd.id_categoria' in 'on clause',columna inexistente,columna o tabla inexistente
+8,farmacia,media,¿Cuánto se ha vendido en total (cantidad por precio unitario) en cada sucursal? Devuelve el nombre de la sucursal y el monto total.,"SELECT s.nombre, SUM(d.cantidad * d.precio_unitario) AS total FROM sucursales s JOIN ventas v ON v.id_sucursal = s.id_sucursal JOIN detalle_venta d ON d.id_venta = v.id_venta GROUP BY s.id_sucursal, s.nombre","SELECT s.nombre AS nombre_sucursal, SUM(d.cantidad * d.precio_unitario) AS monto_total
+FROM ventas v
+JOIN sucursales s ON v.id_sucursal = s.id_sucursal
+GROUP BY s.id_sucursal",True,38.34,38.37,,False,1054: Unknown column 'd.cantidad' in 'field list',columna inexistente,columna o tabla inexistente
+9,farmacia,media,¿Qué proveedores surten más de 3 productos? Devuelve el nombre del proveedor y cuántos productos surte.,"SELECT pr.nombre, COUNT(*) AS productos FROM proveedores pr JOIN productos p ON p.id_proveedor = pr.id_proveedor GROUP BY pr.id_proveedor, pr.nombre HAVING COUNT(*) > 3","SELECT p.nombre, COUNT(p.id_proveedor) AS cantidad_productos
+FROM proveedores p
+JOIN productos pr ON p.id_proveedor = pr.id_proveedor
+GROUP BY p.id_proveedor
+HAVING COUNT(pr.id_proveedor) > 3",True,34.42,34.44,,True,,,correcto
+10,farmacia,media,¿Cuántas unidades se han vendido de cada producto de la categoría Vitaminas? Devuelve el nombre del producto y las unidades.,"SELECT p.nombre, SUM(d.cantidad) AS unidades FROM productos p JOIN categorias c ON c.id_categoria = p.id_categoria JOIN detalle_venta d ON d.id_producto = p.id_producto WHERE c.nombre = 'Vitaminas' GROUP BY p.id_producto, p.nombre","SELECT p.nombre, SUM(d.cantidad) AS unidades_vendidas
+FROM productos p
+JOIN detalle_venta d ON p.id_producto = d.id_producto
+WHERE p.id_categoria = (SELECT id_categoria FROM categorias WHERE nombre = 'Vitaminas')
+GROUP BY p.id_producto, p.nombre
+ORDER BY unidades_vendidas DESC",True,38.62,38.63,,True,,,correcto
+11,farmacia,media,"Para cada empleado que tiene jefe, muestra su nombre, su apellido y el nombre de su jefe.","SELECT e.nombre, e.apellido, j.nombre AS nombre_jefe FROM empleados e JOIN empleados j ON j.id_empleado = e.id_jefe","SELECT e.nombre, e.apellido, e.jefe FROM empleados e WHERE e.id_jefe IS NOT NULL GROUP BY e.id_empleado",True,26.7,26.71,,False,1054: Unknown column 'e.jefe' in 'field list',columna inexistente,columna o tabla inexistente
+12,farmacia,media,"¿Qué empleados han registrado al menos 30 ventas? Devuelve el id del empleado, su nombre y el número de ventas.","SELECT e.id_empleado, e.nombre, COUNT(*) AS ventas FROM empleados e JOIN ventas v ON v.id_empleado = e.id_empleado GROUP BY e.id_empleado, e.nombre HAVING COUNT(*) >= 30","SELECT e.id_empleado, e.nombre, COUNT(*) AS num_ventas
+FROM empleados e
+JOIN ventas v ON e.id_empleado = v.id_empleado
+GROUP BY e.id_empleado, e.nombre
+HAVING COUNT(*) >= 30
+ORDER BY num_ventas DESC",True,33.14,33.15,,True,,,correcto
+13,farmacia,media,"¿Cuál es el precio promedio de los productos según el país del proveedor? Devuelve el país y el precio promedio, solo para los países cuyo promedio supera los 50 quetzales.","SELECT pr.pais, AVG(p.precio) AS precio_promedio FROM proveedores pr JOIN productos p ON p.id_proveedor = pr.id_proveedor GROUP BY pr.pais HAVING AVG(p.precio) > 50","SELECT p.pais, AVG(dv.precio_unitario) AS precio_promedio
+FROM productos p
+JOIN proveedores pr ON p.id_proveedor = pr.id_proveedor
+JOIN detalle_venta dv ON p.id_producto = dv.id_producto
+GROUP BY p.pais
+HAVING AVG(dv.precio_unitario) > 50",True,35.88,35.89,,False,1054: Unknown column 'p.pais' in 'field list',columna inexistente,columna o tabla inexistente
+14,farmacia,dificil,¿Qué productos nunca se han vendido? Devuelve el nombre del producto.,SELECT p.nombre FROM productos p WHERE NOT EXISTS (SELECT 1 FROM detalle_venta d WHERE d.id_producto = p.id_producto),SELECT p.nombre FROM productos p WHERE p.id_producto NOT IN (SELECT id_producto FROM detalle_venta),True,23.5,23.51,,True,,,correcto
+15,farmacia,dificil,"¿Cuánto se vendió en cada mes de 2025? Devuelve el número de mes y el monto total, ordenado por mes.","SELECT MONTH(v.fecha) AS mes, SUM(d.cantidad * d.precio_unitario) AS total FROM ventas v JOIN detalle_venta d ON d.id_venta = v.id_venta WHERE YEAR(v.fecha) = 2025 GROUP BY MONTH(v.fecha) ORDER BY mes","SELECT MONTH(fecha) AS mes, SUM(precio_unitario * cantidad) AS monto_total FROM detalle_venta WHERE YEAR(fecha) = 2025 GROUP BY MONTH(fecha) ORDER BY mes",True,29.01,29.02,,False,1054: Unknown column 'fecha' in 'field list',columna inexistente,columna o tabla inexistente
+16,farmacia,dificil,"En cada sucursal, ¿cuál es el empleado con el salario más alto? Devuelve el nombre de la sucursal, el nombre y apellido del empleado y su salario.","WITH r AS (SELECT e.*, ROW_NUMBER() OVER (PARTITION BY e.id_sucursal ORDER BY e.salario DESC) AS rn FROM empleados e) SELECT s.nombre AS sucursal, r.nombre, r.apellido, r.salario FROM r JOIN sucursales s ON s.id_sucursal = r.id_sucursal WHERE r.rn = 1","SELECT s.nombre AS nombre_sucursal, e.nombre AS nombre_empleado, e.apellido AS apellido_empleado, e.salario AS salario_maximo
+FROM sucursales s
+JOIN empleados e ON s.id_sucursal = e.id_sucursal
+WHERE e.salario = (SELECT MAX(salario) FROM empleados)",True,36.96,36.97,,False,,,JOIN
+17,farmacia,dificil,"¿Qué empleados ganan más que el salario promedio de su propia sucursal? Devuelve el nombre, el apellido y el salario.","SELECT e.nombre, e.apellido, e.salario FROM empleados e WHERE e.salario > (SELECT AVG(e2.salario) FROM empleados e2 WHERE e2.id_sucursal = e.id_sucursal)","SELECT e.nombre, e.apellido, e.salario
+FROM empleados e
+JOIN ventas v ON e.id_empleado = v.id_empleado
+JOIN sucursales s ON v.id_sucursal = s.id_sucursal
+WHERE e.id_sucursal = (SELECT id_sucursal FROM ventas WHERE id_empleado = e.id_empleado GROUP BY id_sucursal ORDER BY AVG(salario) DESC LIMIT 1)",True,41.47,41.48,,False,,,JOIN
+18,farmacia,dificil,"Haz un ranking de las sucursales según su monto vendido en 2026 (1 = la que más vendió). Devuelve el nombre de la sucursal, el monto y su posición, ordenado por posición.","SELECT s.nombre, SUM(d.cantidad * d.precio_unitario) AS total, RANK() OVER (ORDER BY SUM(d.cantidad * d.precio_unitario) DESC) AS posicion FROM sucursales s JOIN ventas v ON v.id_sucursal = s.id_sucursal JOIN detalle_venta d ON d.id_venta = v.id_venta WHERE YEAR(v.fecha) = 2026 GROUP BY s.id_sucursal, s.nombre ORDER BY posicion","SELECT s.nombre, SUM(dv.cantidad * dv.precio_unitario) AS monto_vendido, RANK() OVER (ORDER BY monto_vendido DESC) AS posicion
+FROM ventas v
+JOIN sucursales s ON v.id_sucursal = s.id_sucursal
+JOIN detalle_venta dv ON v.id_venta = dv.id_venta
+WHERE YEAR(v.fecha) = 2026
+GROUP BY s.id_sucursal, s.nombre
+HAVING COUNT(*) > 0
+ORDER BY posicion",True,44.74,44.75,,False,1054: Unknown column 'monto_vendido' in 'window order by',columna inexistente,columna o tabla inexistente
+19,farmacia,dificil,¿Cuántos días pasaron entre la apertura de cada sucursal y su primera venta registrada? Devuelve el nombre de la sucursal y los días.,"SELECT s.nombre, DATEDIFF(MIN(v.fecha), s.fecha_apertura) AS dias FROM sucursales s JOIN ventas v ON v.id_sucursal = s.id_sucursal GROUP BY s.id_sucursal, s.nombre, s.fecha_apertura","SELECT s.nombre, DATEDIFF(v.fecha, s.fecha_apertura) AS dias FROM sucursales s JOIN ventas v ON s.id_sucursal = v.id_sucursal GROUP BY s.nombre ORDER BY dias ASC",True,28.56,28.57,,False,1055: Expression #2 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'farmacia.v.fecha' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by,ONLY_FULL_GROUP_BY,agregación
+20,farmacia,dificil,¿Cuál es el monto promedio por venta según el método de pago? Calcula primero el total de cada venta. Devuelve el método de pago y el monto promedio.,"WITH t AS (SELECT id_venta, SUM(cantidad * precio_unitario) AS total FROM detalle_venta GROUP BY id_venta) SELECT v.metodo_pago, AVG(t.total) AS promedio FROM ventas v JOIN t ON t.id_venta = v.id_venta GROUP BY v.metodo_pago","SELECT metodo_pago, AVG(total) as monto_promedio FROM ventas GROUP BY metodo_pago",True,22.51,22.51,,False,1054: Unknown column 'total' in 'field list',columna inexistente,columna o tabla inexistente
+21,evt_tix,facil,¿Cuántos recintos tienen una capacidad mayor a 5000 personas? Devuelve el total.,SELECT COUNT(*) AS total FROM vnu WHERE cap > 5000,SELECT COUNT(*) FROM vnu WHERE cap > 5000,True,18.12,18.13,,True,,,correcto
+22,evt_tix,facil,Lista el nombre de los artistas de género jazz.,SELECT artst_nm FROM artst WHERE genre = 'jazz',SELECT artst_nm FROM artst WHERE genre = 'Jazz',True,17.47,17.48,,True,,,correcto
+23,evt_tix,facil,¿Cuántas órdenes fueron reembolsadas? Devuelve el total.,SELECT COUNT(*) AS total FROM tkt_ord WHERE sts = 'REFUNDED',SELECT SUM(CASE WHEN sts = 'REFUNDED' THEN 1 ELSE 0 END) AS total_refunds FROM tkt_ord,True,22.52,22.53,,True,,,correcto
+24,evt_tix,facil,"Muestra el nombre y la fecha de los eventos de 2025, ordenados por fecha.","SELECT evt_nm, evt_dt FROM evt WHERE YEAR(evt_dt) = 2025 ORDER BY evt_dt","SELECT evt_nm, evt_dt FROM evt WHERE YEAR(evt_dt) = 2025 ORDER BY evt_dt",True,20.55,20.56,,True,,,correcto
+25,evt_tix,facil,Lista el nombre y el apellido de los clientes que no tienen correo electrónico registrado.,"SELECT fname, lname FROM cust WHERE email IS NULL","SELECT fname ,  lname FROM cust WHERE email IS NULL",True,17.55,17.56,,True,,,correcto
+26,evt_tix,facil,¿Cuál es el precio base más alto entre todos los eventos? Devuelve el precio.,SELECT MAX(base_prc) AS precio FROM evt,SELECT MAX(base_prc) FROM evt,True,18.14,18.15,,True,,,correcto
+27,evt_tix,media,¿Cuántos eventos hay en cada ciudad? Devuelve la ciudad y la cantidad de eventos.,"SELECT v.city, COUNT(*) AS eventos FROM evt e JOIN vnu v ON v.vnu_id = e.vnu_id GROUP BY v.city","SELECT city ,  COUNT(*) FROM evt GROUP BY city ORDER BY count(*) DESC",True,18.1,18.11,,False,1054: Unknown column 'city' in 'field list',columna inexistente,columna o tabla inexistente
+28,evt_tix,media,"¿Cuánto ha recaudado cada artista en boletos, contando solo las órdenes pagadas? Devuelve el nombre del artista y el total.","SELECT a.artst_nm, SUM(t.prc) AS total FROM artst a JOIN evt e ON e.artst_id = a.artst_id JOIN tkt t ON t.evt_id = e.evt_id JOIN tkt_ord o ON o.ord_id = t.ord_id WHERE o.sts = 'PAID' GROUP BY a.artst_id, a.artst_nm","SELECT a.artst_nm, SUM(t.prc) as total_revenue
+FROM artst a
+JOIN evt e ON a.artst_id = e.artst_id
+JOIN tkt t ON e.evt_id = t.evt_id
+JOIN tkt_ord to ON t.tkt_id = to.tkt_id
+WHERE to.sts = 'PAID'
+GROUP BY a.artst_id",True,34.79,34.8,,False,"1064: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'to ON t.tkt_id = to.tkt_id
+WHERE to.sts = 'PAID'
+GROUP BY a.artst_id' at line 5",sintaxis,sintaxis
+29,evt_tix,media,"¿Qué clientes han hecho más de 5 órdenes? Devuelve el nombre, el apellido y la cantidad de órdenes.","SELECT c.fname, c.lname, COUNT(*) AS ordenes FROM cust c JOIN tkt_ord o ON o.cust_id = c.cust_id GROUP BY c.cust_id, c.fname, c.lname HAVING COUNT(*) > 5","SELECT c.fname, c.lname, COUNT(tkt_ord.ord_id) AS num_orders
+FROM cust c
+JOIN tkt_ord ON c.cust_id = tkt_ord.cust_id
+GROUP BY c.cust_id
+HAVING COUNT(tkt_ord.ord_id) > 5
+ORDER BY num_orders DESC",True,34.56,34.57,,True,,,correcto
+30,evt_tix,media,¿Qué eventos vendieron al menos 6 boletos VIP? Devuelve el nombre del evento y la cantidad de boletos VIP.,"SELECT e.evt_nm, COUNT(*) AS vip FROM evt e JOIN tkt t ON t.evt_id = e.evt_id WHERE t.seat_cls = 'VIP' GROUP BY e.evt_id, e.evt_nm HAVING COUNT(*) >= 6","SELECT e.evt_nm, COUNT(DISTINCT t.tkt_id) AS num_vip_tickets
+FROM evt e
+JOIN tkt t ON e.evt_id = t.evt_id
+WHERE t.seat_cls = 'VIP'
+GROUP BY e.evt_nm
+HAVING COUNT(DISTINCT t.tkt_id) >= 6
+ORDER BY num_vip_tickets DESC",True,33.87,33.88,,True,,,correcto
+31,evt_tix,media,¿Cuál es el precio promedio pagado por boleto en cada clase de asiento? Devuelve la clase y el precio promedio.,"SELECT seat_cls, AVG(prc) AS promedio FROM tkt GROUP BY seat_cls","SELECT seat_cls, AVG(prc) AS avg_price FROM tkt GROUP BY seat_cls",True,21.78,21.79,,True,,,correcto
+32,evt_tix,media,¿Cuántos boletos se han vendido para eventos de cada recinto? Devuelve el nombre del recinto y la cantidad de boletos.,"SELECT v.vnu_nm, COUNT(*) AS boletos FROM vnu v JOIN evt e ON e.vnu_id = v.vnu_id JOIN tkt t ON t.evt_id = e.evt_id GROUP BY v.vnu_id, v.vnu_nm","SELECT v.vnu_nm, COUNT(t.tkt_id) AS num_tickets_sold
+FROM vnu v
+JOIN evt e ON v.vnu_id = e.vnu_id
+JOIN tkt t ON e.evt_id = t.evt_id
+GROUP BY v.vnu_id",True,31.96,31.97,,True,,,correcto
+33,evt_tix,media,¿Qué géneros musicales tienen más de un artista? Devuelve el género y el número de artistas.,"SELECT genre, COUNT(*) AS artistas FROM artst GROUP BY genre HAVING COUNT(*) > 1","SELECT genre, COUNT(*) FROM artst GROUP BY genre HAVING COUNT(*) > 1",True,19.4,19.4,,True,,,correcto
+34,evt_tix,dificil,¿Qué clientes nunca han hecho una orden? Devuelve el nombre y el apellido.,"SELECT fname, lname FROM cust WHERE cust_id NOT IN (SELECT cust_id FROM tkt_ord)","SELECT c.fname, c.lname FROM cust AS c WHERE c.cust_id NOT IN (SELECT cust_id FROM tkt_ord)",True,21.61,21.61,,True,,,correcto
+35,evt_tix,dificil,"Para cada evento, calcula el porcentaje de ocupación: boletos de órdenes pagadas entre la capacidad del recinto, por 100. Devuelve el nombre del evento y el porcentaje, solo de eventos con algún boleto pagado.","SELECT e.evt_nm, COUNT(*) / v.cap * 100 AS ocupacion FROM evt e JOIN vnu v ON v.vnu_id = e.vnu_id JOIN tkt t ON t.evt_id = e.evt_id JOIN tkt_ord o ON o.ord_id = t.ord_id WHERE o.sts = 'PAID' GROUP BY e.evt_id, e.evt_nm, v.cap","SELECT e.evt_nm, CAST(SUM(CASE WHEN t.prc IS NOT NULL THEN 1 ELSE 0 END) AS DECIMAL(5,2)) * 100 / v.cap AS percentage FROM evt e JOIN tkt t ON e.evt_id = t.evt_id JOIN vnu v ON e.vnu_id = v.vnu_id WHERE t.prc IS NOT NULL GROUP BY e.evt_id HAVING COUNT(*) > 0",True,40.91,40.92,,False,,,JOIN
+36,evt_tix,dificil,"¿Cuántas órdenes se hicieron en cada mes de 2026? Devuelve el mes en formato 'AAAA-MM' y la cantidad, ordenado por mes.","SELECT DATE_FORMAT(ord_dt, '%Y-%m') AS mes, COUNT(*) AS ordenes FROM tkt_ord WHERE YEAR(ord_dt) = 2026 GROUP BY DATE_FORMAT(ord_dt, '%Y-%m') ORDER BY mes","SELECT DATE_FORMAT(ord_dt, '%Y-%m') AS month, COUNT(*) AS order_count FROM tkt_ord WHERE YEAR(ord_dt) = 2026 GROUP BY DATE_FORMAT(ord_dt, '%Y-%m') ORDER BY month",True,27.74,27.75,,True,,,correcto
+37,evt_tix,dificil,"Para cada artista, ¿cuál es su evento con más boletos vendidos? Devuelve el nombre del artista, el nombre del evento y la cantidad de boletos.","WITH r AS (SELECT e.artst_id, e.evt_nm, COUNT(*) AS boletos, ROW_NUMBER() OVER (PARTITION BY e.artst_id ORDER BY COUNT(*) DESC) AS rn FROM evt e JOIN tkt t ON t.evt_id = e.evt_id GROUP BY e.artst_id, e.evt_id, e.evt_nm) SELECT a.artst_nm, r.evt_nm, r.boletos FROM r JOIN artst a ON a.artst_id = r.artst_id WHERE r.rn = 1","SELECT a.artst_nm, e.evt_nm, COUNT(t.tkt_id) AS num_tickets_sold
+FROM artst a
+JOIN evt e ON a.artst_id = e.artst_id
+JOIN tkt t ON e.evt_id = t.evt_id
+GROUP BY a.artst_id, e.evt_id
+ORDER BY num_tickets_sold DESC
+LIMIT 1",True,35.31,35.32,,False,,,JOIN
+38,evt_tix,dificil,¿Qué eventos tienen un precio base mayor al precio base promedio de los eventos de su mismo recinto? Devuelve el nombre del evento y su precio base.,"SELECT e.evt_nm, e.base_prc FROM evt e WHERE e.base_prc > (SELECT AVG(e2.base_prc) FROM evt e2 WHERE e2.vnu_id = e.vnu_id)","SELECT e.evt_nm, e.base_prc FROM evt e JOIN vnu v ON e.vnu_id = v.vnu_id WHERE e.base_prc > (SELECT AVG(base_prc) FROM evt WHERE vnu_id = e.vnu_id) GROUP BY e.evt_nm",True,29.21,29.22,,False,1055: Expression #2 of SELECT list is not in GROUP BY clause and contains nonaggregated column 'evt_tix.e.base_prc' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by,ONLY_FULL_GROUP_BY,agregación
+39,evt_tix,dificil,"¿Quiénes son los 3 clientes que más han gastado en órdenes pagadas? Devuelve el nombre, el apellido y el total gastado, de mayor a menor.","SELECT c.fname, c.lname, SUM(t.prc) AS gastado FROM cust c JOIN tkt_ord o ON o.cust_id = c.cust_id JOIN tkt t ON t.ord_id = o.ord_id WHERE o.sts = 'PAID' GROUP BY c.cust_id, c.fname, c.lname ORDER BY gastado DESC LIMIT 3","SELECT c.fname, c.lname, SUM(t.prc) as total_gastado
+FROM cust c
+JOIN tkt_ord to ON c.cust_id = to.cust_id
+JOIN tkt t ON to.ord_id = t.ord_id
+WHERE to.sts = 'PAID'
+GROUP BY c.cust_id
+ORDER BY total_gastado DESC
+LIMIT 3",True,39.72,39.73,,False,"1064: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'to ON c.cust_id = to.cust_id
+JOIN tkt t ON to.ord_id = t.ord_id
+WHERE to.sts = '' at line 3",sintaxis,sintaxis
+40,evt_tix,dificil,"Para cada cliente que ha comprado, ¿cuántos días pasaron entre su fecha de registro y su primera orden? Devuelve el nombre, el apellido, la fecha de la primera orden y los días.","SELECT c.fname, c.lname, MIN(o.ord_dt) AS primera_orden, DATEDIFF(MIN(o.ord_dt), c.reg_dt) AS dias FROM cust c JOIN tkt_ord o ON o.cust_id = c.cust_id GROUP BY c.cust_id, c.fname, c.lname, c.reg_dt","SELECT c.fname, c.lname, tord.ord_dt, DATEDIFF(tord.ord_dt, c.reg_dt) AS days_passed
+FROM cust c
+JOIN tkt_ord tord ON c.cust_id = tord.cust_id
+WHERE tord.sts = 'PAID'
+GROUP BY c.cust_id, tord.ord_dt",True,34.06,34.07,,False,,,agregación

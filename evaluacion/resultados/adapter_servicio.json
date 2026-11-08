@@ -1,0 +1,16 @@
+{
+ "listo": true,
+ "modelo_base": "Qwen/Qwen2.5-Coder-1.5B-Instruct",
+ "usar_adapter": true,
+ "cuantizar": false,
+ "segundos_carga": 17.3,
+ "config": {
+  "USAR_ADAPTER": "1",
+  "CUANTIZAR": "0"
+ },
+ "memoria_max_gb": 6.46,
+ "minutos_evaluacion": 18.3,
+ "hilos_cpu": 14,
+ "fecha": "2026-11-07 17:02",
+ "memoria_estable_gb": 6.31
+}

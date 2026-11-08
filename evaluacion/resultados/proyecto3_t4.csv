@@ -1,0 +1,7 @@
+modelo,modo,EX ponderada,acierto facil,acierto media,acierto dificil,s/pregunta (máx)
+base,con_ejecutar,0.537,0.917,0.643,0.357,25.06
+base,sin_ejecutar,0.439,0.917,0.571,0.214,4.79
+atencion,con_ejecutar,0.659,1.0,0.857,0.429,19.09
+atencion,sin_ejecutar,0.598,0.917,0.714,0.429,5.38
+todas,con_ejecutar,0.683,0.833,0.786,0.571,15.29
+todas,sin_ejecutar,0.646,0.75,0.714,0.571,4.61

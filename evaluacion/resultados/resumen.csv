@@ -1,0 +1,5 @@
+config,EX ponderada,acierto facil,acierto media,acierto dificil,correctas,preguntas,latencia p50 (s),latencia p95 (s),latencia max (s),bloqueadas por filtro,errores API,carga (s),memoria max (GB),memoria estable (GB)
+base,0.439,0.917,0.571,0.214,22,40,28.15,41.63,44.9,0,0,15.5,6.42,6.27
+adapter,0.585,0.75,0.643,0.5,25,40,27.03,42.79,50.47,0,0,17.3,6.46,6.31
+adapter_int8,0.0,0.0,0.0,0.0,0,40,8.59,49.91,50.98,0,0,29.1,8.96,8.91
+adapter_int8_parcial,0.463,0.917,0.643,0.214,23,40,16.53,28.84,29.55,0,0,25.2,8.23,8.08

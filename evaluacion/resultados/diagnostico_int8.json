@@ -1,0 +1,32 @@
+[
+ {
+  "variante": "fp32 (referencia)",
+  "acuerdo_top1": 1.0,
+  "error_relativo_logits": 0.0,
+  "segundos_prefill": 19.36
+ },
+ {
+  "variante": "int8 por tensor (servicio)",
+  "acuerdo_top1": 0.652,
+  "error_relativo_logits": 0.557,
+  "segundos_prefill": 11.36
+ },
+ {
+  "variante": "int8 por canal",
+  "acuerdo_top1": 0.644,
+  "error_relativo_logits": 0.542,
+  "segundos_prefill": 13.58
+ },
+ {
+  "variante": "int8 activaciones 7 bits",
+  "acuerdo_top1": 0.652,
+  "error_relativo_logits": 0.557,
+  "segundos_prefill": 11.2
+ },
+ {
+  "variante": "int8 sin down_proj",
+  "acuerdo_top1": 0.936,
+  "error_relativo_logits": 0.207,
+  "segundos_prefill": 15.64
+ }
+]
