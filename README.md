@@ -4,7 +4,7 @@ Servicio que recibe un esquema MySQL 8.4 y una pregunta en español, y devuelve 
 
 Acceso local al iniciar el servidor: [http://127.0.0.1:7860](http://127.0.0.1:7860).
 
-Acceso público: pendiente de registrar la dirección vigente del túnel. La URL temporal de Cloudflare cambia al reiniciar y solo funciona mientras la PC y los procesos permanecen encendidos.
+Última URL pública verificada: [sticky-molecular-brick-wan.trycloudflare.com](https://sticky-molecular-brick-wan.trycloudflare.com), el 7 de noviembre de 2026 a las 22:38, UTC−06:00. Se comprobó la conectividad con el modelo sin cargar. El túnel se cerró al terminar la revisión y esta dirección no se mantiene activa. Cada nuevo arranque genera una URL temporal distinta.
 
 **1. Problemática**
 
@@ -26,7 +26,8 @@ Las fechas de implementación se tomaron del historial de Git en hora de Guatema
 | Interfaz web y túnel público | 7 de noviembre de 2026, 14:54 a 14:55 | Responsable del despliegue | Configurado, commits `89f200d`, `89d1253` y `48c1b85` |
 | Hipótesis y evaluación en CPU | 7 de noviembre de 2026, 16:52 a 18:30 | Responsable del modelo y la validación | Resultados incorporados, commits `7fd7062` a `b71503f` |
 | Contexto, ejemplos e integración del informe | 7 de noviembre de 2026 | Responsable del contexto y las evidencias | Documentación incorporada en este repositorio |
-| Pruebas por URL pública y cinco usuarios externos | 8 de noviembre de 2026 | Responsable de las evidencias, con apoyo del despliegue | Programadas, sujetas a disponibilidad del servicio y de los participantes |
+| Verificación local y conectividad por túnel | 7 de noviembre de 2026, 22:38 a 22:39 | Responsable de las evidencias | 32 pruebas aprobadas y endpoints públicos accesibles. Modelo sin cargar por disponibilidad de memoria |
+| Generación, carga ligera y cinco usuarios externos | 8 de noviembre de 2026 | Responsable de las evidencias, con apoyo del despliegue | Pendientes. Requieren memoria suficiente, modelo listo y participantes reales |
 | Revisión de la entrega | 9 de noviembre de 2026 | Equipo del proyecto | Programada |
 | Cierre de ajustes | 15 de noviembre de 2026, 23:59 | Equipo del proyecto | Programado |
 
@@ -114,13 +115,16 @@ Diagrama y decisiones de implementación: [docs/arquitectura.md](docs/arquitectu
 |---|---|
 | Validación del modelo por API en CPU | Disponible en [evaluacion/resultados/](evaluacion/resultados/) |
 | Esquema y cinco preguntas de uso | Disponibles en [preguntas_ejemplo.md](evidencias/preguntas_ejemplo.md) |
-| Prueba de humo con tres preguntas por la URL pública | Pendiente de ejecución con el servicio publicado |
-| Carga ligera de 20 solicitudes, dos a la vez | Pendiente de ejecución con el servicio publicado |
+| Pruebas locales con las dependencias fijadas | 32 aprobadas. Registro en [verificacion_local.txt](evidencias/verificacion_local.txt) |
+| Prueba de humo con tres preguntas por la URL pública | No aprobada. Se comprobó conectividad, pero el modelo no se cargó. Detalle en [prueba_humo.txt](evidencias/prueba_humo.txt) |
+| Carga ligera de 20 solicitudes, dos a la vez | No ejecutada. Requiere completar la carga del modelo |
 | Cinco participantes externos y sus votos | Pendiente, registro preparado en [sesiones_usuarios.md](evidencias/sesiones_usuarios.md) |
-| Descarga de salud, métricas y registros públicos | Pendiente de la sesión pública |
+| Descarga de salud, métricas y registros públicos | Disponible en [evidencias/](evidencias/), con `listo` en falso, cero solicitudes, cero votos y registro vacío |
 | Capturas del servicio y del historial | Pendientes de incorporación |
 
 El procedimiento, los archivos esperados y los criterios de cierre están en [evidencias/README.md](evidencias/README.md). Las pruebas automáticas y los votos acumulados no demuestran por sí solos participación de cinco personas distintas.
+
+Durante la preparación se observaron 2.51 GB de RAM disponibles, frente a los 6.31 GB de memoria estable registrados para el servicio con adapter en la evaluación previa. Se verificó la API con `PRECARGAR=0` y se cerraron los procesos al terminar. El estado del entorno quedó en [entorno.json](evidencias/entorno.json). Esta comprobación acredita conectividad y no acredita generación de SQL ni uso en producción.
 
 Se recomienda mantener una prueba piloto supervisada con el adapter B en fp32. La continuidad del servicio queda sujeta a completar la evidencia de uso externo, comprobar los tiempos por la URL pública y conservar la revisión humana del SQL.
 
@@ -151,6 +155,8 @@ La dirección HTTPS que imprime Cloudflare se utiliza para acceder a la interfaz
 cloudflared tunnel --no-autoupdate --url http://127.0.0.1:7860
 ```
 
+En el entorno local preparado también se encuentra el ejecutable en `.venv/Scripts/cloudflared.exe`. Se puede utilizar esa ruta completa en lugar de `cloudflared`. El entorno virtual y el ejecutable no se distribuyen en Git.
+
 **Ejecución con Docker**
 
 ```powershell
@@ -160,6 +166,8 @@ docker run --rm -p 127.0.0.1:7860:7860 --mount "type=bind,source=$PWD\registros,
 ```
 
 La construcción descarga el modelo base. El volumen conserva `uso.jsonl` al detener el contenedor. La interfaz queda en la misma dirección local y puede publicarse con el comando de túnel anterior.
+
+La ejecución con Docker no se comprobó durante esta revisión.
 
 | Variable | Uso |
 |---|---|

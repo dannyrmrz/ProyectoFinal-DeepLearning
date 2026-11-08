@@ -22,7 +22,8 @@ Las fechas de las etapas terminadas se tomaron del historial de Git, con hora de
 | Registro de hipótesis | 7 de noviembre de 2026, 16:52 | Responsable del modelo y la validación | Commit `7fd7062`. La fecha del commit es posterior al cierre registrado de la corrida base |
 | Evaluación en CPU y comparación con T4 | 7 de noviembre de 2026, 18:19 a 18:30 | Responsable del modelo y la validación | Commits `5656043`, `0a2271f`, `9ce0766` y `b71503f`. Resultados conservados en `evaluacion/resultados/` |
 | Contexto, guía de uso e integración del informe | 7 de noviembre de 2026 | Responsable del contexto y las evidencias | Documentación incorporada en `docs/`, `evidencias/` y `README.md`. Fecha verificable en los commits de estos archivos |
-| Prueba de humo y carga ligera por la URL pública | 8 de noviembre de 2026 | Responsable de las evidencias, con apoyo del despliegue | Programada. Requiere el servicio activo y la dirección vigente |
+| Verificación local y conectividad pública | 7 de noviembre de 2026, 22:38 a 22:39 | Responsable de las evidencias | 32 pruebas locales aprobadas. API y túnel accesibles, con el modelo sin cargar por disponibilidad de memoria. Detalle en `evidencias/prueba_humo.txt` |
+| Generación de la prueba de humo y carga ligera por la URL pública | 8 de noviembre de 2026 | Responsable de las evidencias, con apoyo del despliegue | Pendientes. Requieren memoria suficiente, modelo listo y dirección vigente |
 | Uso por al menos cinco personas externas y descarga de registros | 8 de noviembre de 2026 | Responsable de las evidencias | Programado. Requiere participación real y votos de los usuarios |
 | Revisión final de la entrega | 9 de noviembre de 2026 | Equipo del proyecto | Programada. Se deben revisar los resultados y los pendientes antes de la exposición |
 | Cierre de ajustes | 15 de noviembre de 2026, 23:59 | Equipo del proyecto | Fecha prevista para completar los ajustes de la entrega |

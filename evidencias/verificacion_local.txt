@@ -1,0 +1,8 @@
+Registro de verificación local
+2026-11-07T22:38:56.4760318-06:00
+Python 3.13.2
+Dependencias: torch 2.15.0+cpu, transformers 5.22.2, peft 0.21.2, accelerate 1.15.0, fastapi 0.162.2, uvicorn 0.54.0, pytest 9.2.0, httpx 0.28.1, pandas 3.1.1, pymysql 1.2.3, matplotlib 3.11.2, psutil 7.2.2
+Comando: .venv\Scripts\python.exe -m pytest -q
+................................                                         [100%]
+32 passed in 9.15s
+Código de salida: 0

@@ -9,15 +9,24 @@ La evidencia disponible permite revisar la implementación y la validación del 
 | Contexto, planificación y supuestos | [docs/contexto.md](../docs/contexto.md) | Disponible |
 | Resultados de calidad y latencia en CPU | [resumen.csv](../evaluacion/resultados/resumen.csv) y [validación](../docs/modelo_y_validacion.md) | Disponibles, con la limitación de cronología documentada |
 | Cinco preguntas para usuarios | [preguntas_ejemplo.md](preguntas_ejemplo.md) | Disponibles y vinculadas a las referencias existentes |
-| Verificación local del repositorio | `verificacion_local.txt` | Se registra por separado de las pruebas del servicio público |
-| Prueba de humo por la URL pública | `prueba_humo.txt` | Pendiente de una URL activa y del modelo listo |
-| Carga ligera de 20 solicitudes, dos a la vez | `prueba_carga.csv` y `resumen_carga.md` | Pendiente de ejecución contra el servicio |
+| Verificación local del repositorio | [verificacion_local.txt](verificacion_local.txt) | 32 pruebas aprobadas con las versiones fijadas. Python 3.13.2 |
+| Prueba de humo por la URL pública | [prueba_humo.txt](prueba_humo.txt) | No aprobada. Conectividad comprobada, generación pendiente por disponibilidad de memoria |
+| Carga ligera de 20 solicitudes, dos a la vez | `prueba_carga.csv` y `resumen_carga.md` | No ejecutada. Requiere el modelo cargado |
 | Participación externa | [sesiones_usuarios.md](sesiones_usuarios.md) | Registro preparado, sin sesiones acreditadas |
-| Estado del modelo publicado | `salud.json` | Pendiente de descarga durante la sesión pública |
-| Métricas y registro de uso | `metricas_antes.json`, `metricas.json` y `registros.jsonl` | Pendientes de descarga durante la sesión pública |
+| Estado del modelo durante la comprobación | [salud.json](salud.json) | Descargado de la URL pública, con `listo` en falso |
+| Métricas y registro de la comprobación | [metricas_antes.json](metricas_antes.json), [metricas.json](metricas.json) y [registros.jsonl](registros.jsonl) | Descargados. Cero solicitudes, cero votos y registro vacío |
+| Recursos del equipo al finalizar | [entorno.json](entorno.json) | Disponibles. Corresponden a esta revisión, con el servidor detenido |
 | Capturas de funcionamiento e historial | `capturas/` | Pendientes de incorporación |
 
 Los nombres de archivos pendientes indican dónde conservar los resultados cuando se obtengan. Su presencia en esta tabla no acredita una prueba realizada.
+
+**Comprobación del 7 de noviembre de 2026**
+
+Se levantaron FastAPI y un túnel temporal de Cloudflare. La interfaz, salud, métricas y registros respondieron con HTTP 200 por la URL pública. Se utilizó `PRECARGAR=0` porque se observaron 2.51 GB de RAM disponibles antes de cargar el modelo, frente a los 6.31 GB de memoria estable de la corrida previa con adapter B en fp32.
+
+El modelo quedó sin cargar y la respuesta de salud mostró `listo` en falso. No se enviaron consultas SQL ni votos y no se ejecutó la carga ligera. Se descargaron las respuestas reales de los endpoints y se detuvieron el servidor y el túnel a las 22:39:27, UTC−06:00. La URL se conserva como referencia histórica en `prueba_humo.txt` y no se mantiene activa.
+
+Para completar la evidencia se requiere repetir la prueba de humo con el modelo listo, ejecutar la carga y realizar las sesiones externas. Las descargas de esta comprobación no sustituyen los registros de esas sesiones.
 
 **Preparación de la sesión**
 

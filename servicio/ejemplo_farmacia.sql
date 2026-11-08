@@ -63,7 +63,7 @@ CREATE TABLE `sucursales` (
 CREATE TABLE `ventas` (
   `id_venta` int NOT NULL,
   `id_sucursal` int NOT NULL,
-  `id_empleado` int NOT NULL COMMENT 'Empleado que registrÃ³ la venta',
+  `id_empleado` int NOT NULL COMMENT 'Empleado que registró la venta',
   `fecha` datetime NOT NULL,
   `metodo_pago` varchar(15) DEFAULT NULL COMMENT 'efectivo, tarjeta o transferencia',
   PRIMARY KEY (`id_venta`),

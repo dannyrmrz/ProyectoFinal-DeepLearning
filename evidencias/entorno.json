@@ -1,0 +1,15 @@
+{
+  "fecha": "2026-11-07T22:39:29-06:00",
+  "python": "3.13.2",
+  "ram_total_gb": 15.7,
+  "ram_disponible_gb": 4.53,
+  "disco_libre_gb": 6.2,
+  "nucleos_fisicos": 4,
+  "nucleos_logicos": 8,
+  "precargar": "0",
+  "usar_adapter": "1",
+  "cuantizar": "0",
+  "url_verificada": "https://sticky-molecular-brick-wan.trycloudflare.com",
+  "commit_del_servicio_al_iniciar": "05e8302",
+  "modelo_cargado": false
+}
