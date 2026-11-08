@@ -15,3 +15,6 @@ docs/          secciones del documento técnico
 ```
 
 Arquitectura, API e instrucciones de ejecución: [docs/arquitectura.md](docs/arquitectura.md).
+
+Modelo y validación (secciones 4 y 5): [docs/modelo_y_validacion.md](docs/modelo_y_validacion.md).
+Evaluación reproducible y resultados CPU: [evaluacion/README.md](evaluacion/README.md).
