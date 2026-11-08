@@ -38,18 +38,18 @@ flowchart LR
 | Entrenamiento | `transformers`, `peft`, Colab T4 | LoRA entrena 18 M de 1,500 M parámetros y cabe en una GPU gratuita |
 | Modelo | Base + adapter fusionados con `merge_and_unload` | Sin sobrecosto de LoRA en cada inferencia |
 | Servicio | FastAPI que sirve la API y una página HTML | La interfaz usa la misma API que cualquier cliente; sin dependencias de frontend |
-| Despliegue | PC del equipo + Cloudflare Tunnel (`cloudflared`) | URL pública HTTPS gratuita sin abrir puertos. Hugging Face pide PRO para Spaces Docker/Gradio y los planes gratuitos de Render/Railway (512 MB) no alcanzan para los ~7 GB del modelo |
+| Despliegue | PC del equipo + Cloudflare Tunnel | URL pública HTTPS temporal sin abrir puertos. Su disponibilidad depende de la PC, la conexión y el proceso del túnel |
 | Portabilidad | `Dockerfile` | La misma imagen corre en cualquier nube con ≥ 8 GB de RAM (Cloud Run, una VM) si el servicio se mantiene |
-| Seguridad | `es_solo_lectura` | Se bloquea cualquier salida que no sea `SELECT`/`WITH` o que contenga varias sentencias, `INTO OUTFILE` o DDL/DML |
+| Seguridad | `es_solo_lectura` | Se revisan el inicio de la consulta, patrones de escritura y varias sentencias. El filtro no sustituye la revisión del SQL ni los permisos de lectura en MySQL |
 | Monitoreo | JSONL + `/api/metricas` + logs de uvicorn | Cada solicitud guarda pregunta, SQL, latencia y si se bloqueó; el feedback 👍/👎 mide calidad percibida |
 
 ### Decisiones
 
-- **CPU en lugar de GPU.** En CPU (fp32) el modelo carga en ~13 s y responde en 7–25 s por pregunta, aceptable para un usuario que antes esperaba a un analista. Evita costos de GPU.
-- **Una generación a la vez.** Un candado serializa `generate`; con 2 vCPU, generar en paralelo solo aumenta la latencia de todos.
+- **CPU en lugar de GPU.** En la corrida registrada con adapter B en fp32, la carga tomó 17.3 segundos y la latencia del servicio fue de 27.03 segundos en p50 y 42.79 segundos en p95. La memoria estable fue de 6.31 GB. Estas cifras corresponden a solicitudes secuenciales y no acreditan el tiempo completo por la URL pública.
+- **Una generación a la vez.** Un candado serializa `generate`. Las solicitudes simultáneas esperan su turno y requieren una prueba de carga para medir su efecto en la latencia.
 - **Carga en segundo plano.** El modelo se carga al arrancar en un hilo; `/api/salud` dice `listo: false` mientras tanto, y la primera solicitud espera la carga.
 - **Sin ejecución de SQL.** El servicio no se conecta a la base del usuario: devuelve la consulta y el usuario la revisa y ejecuta. Por eso no se usa el ciclo de autocorrección con `ejecutar` del Proyecto 3. Así el servicio no guarda credenciales ni datos de la base del usuario.
-- **Privacidad del registro.** Se guarda la pregunta y el SQL, pero no el esquema (solo su longitud).
+- **Privacidad del registro.** Se guardan la pregunta, el SQL y los comentarios de los votos. Del esquema solo se conserva su longitud. Los registros se revisan antes de compartirse y se utiliza información de demostración. Los endpoints de métricas y registros no tienen autenticación en esta versión.
 - **Límites de entrada.** Esquema hasta 20,000 caracteres y pregunta hasta 500 (respuesta 422 si no se cumplen).
 
 ### API
@@ -61,6 +61,7 @@ flowchart LR
 | GET | `/api/salud` | | `{"listo", "modelo_base", "usar_adapter", "segundos_carga"}` |
 | GET | `/api/metricas` | | solicitudes, errores, latencia p50/p95, tasa de solo lectura, votos y tasa de 👍 |
 | GET | `/api/registros` | | registro completo en JSONL |
+| GET | `/api/ejemplo` | | esquema de farmacia sin filas de datos |
 
 ### Ejecución
 
@@ -81,6 +82,8 @@ Publicar con URL pública (Windows, requiere [`cloudflared`](https://developers.
 
 `cloudflared` imprime una URL `https://<nombre>.trycloudflare.com`. El servicio está disponible mientras el script y la PC estén encendidos; la URL cambia en cada ejecución.
 
+El script inicia su propia instancia de uvicorn. Antes de ejecutarlo se libera el puerto 7860. Si el servidor ya está iniciado, se puede publicar desde otra terminal con `cloudflared tunnel --no-autoupdate --url http://127.0.0.1:7860`.
+
 Docker (alternativa en cualquier máquina con ≥ 8 GB de RAM):
 
 ```bash
@@ -88,6 +91,8 @@ docker build -t texto-sql .
 docker run -p 7860:7860 texto-sql
 ```
 
-Variables: `USAR_ADAPTER=0` sirve el modelo base (línea base), `ADAPTER` cambia la ruta del adapter, `DIR_REGISTROS` cambia dónde se guarda el registro y `PRECARGAR=0` desactiva la carga al arrancar.
+Variables: `USAR_ADAPTER=0` sirve el modelo base. `ADAPTER` cambia la ruta del adapter. `DIR_REGISTROS` cambia dónde se guarda el registro. `PRECARGAR=0` desactiva la carga al arrancar. `CUANTIZAR=0` conserva fp32 y es la configuración elegida. Las opciones `1` y `parcial` se reservan para reproducir los experimentos de int8.
 
 El registro de uso queda en `registros/uso.jsonl` de la PC que sirve el modelo; también se puede descargar desde `/api/registros`.
+
+Las instrucciones integradas y el montaje persistente de registros para Docker están en [README.md](../README.md). El protocolo de pruebas públicas y sesiones externas está en [evidencias/README.md](../evidencias/README.md).
