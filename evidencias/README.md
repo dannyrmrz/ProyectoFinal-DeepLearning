@@ -1,6 +1,6 @@
 **7. Evidencias del servicio**
 
-La evidencia disponible incluye la validación del modelo, la prueba de humo y la carga ligera por la URL pública. Se conservan por separado las mediciones de validación secuencial y las de carga con dos solicitudes simultáneas.
+La evidencia disponible incluye la validación del modelo, la prueba de humo, la carga ligera y una sesión con cinco participantes externos por la URL pública. Se conservan por separado las mediciones de validación secuencial, las de carga con dos solicitudes simultáneas y los registros de uso con valoraciones.
 
 **Estado de las evidencias**
 
@@ -13,7 +13,8 @@ La evidencia disponible incluye la validación del modelo, la prueba de humo y l
 | Prueba de humo por la URL pública | [prueba_humo.txt](prueba_humo.txt) y [humo_resultados.json](humo_resultados.json) | Aprobada. Tres consultas completadas con HTTP 200 y SQL de lectura |
 | Carga ligera de 20 solicitudes, dos a la vez | [prueba_carga.csv](prueba_carga.csv) y [resumen_carga.md](resumen_carga.md) | Completada. Cero errores, cero bloqueos y seis respuestas de 60 segundos o más |
 | Estado del modelo durante la comprobación | [salud.json](salud.json) | Descargado de la URL pública, con `listo` en verdadero, adapter activo y fp32 |
-| Métricas y registro de la comprobación | [metricas_antes.json](metricas_antes.json), [metricas.json](metricas.json) y [registros.jsonl](registros.jsonl) | Descargados. 23 solicitudes, cero errores y cero votos |
+| Métricas y registro de las pruebas del 7 de noviembre | [metricas_antes.json](metricas_antes.json), [metricas.json](metricas.json) y [registros.jsonl](registros.jsonl) | Descargados. 23 solicitudes, cero errores y cero votos |
+| Sesión con participantes externos del 8 de noviembre | [sesiones_usuarios.md](sesiones_usuarios.md) y [uso_usuarios_20261108/](uso_usuarios_20261108/) | Cinco participantes confirmados y cinco votos positivos sobre consultas distintas |
 | Entorno de la sesión | [entorno.json](entorno.json) | Configuración registrada con el modelo cargado y cuatro hilos de CPU |
 | Endpoints públicos y cierre de la sesión | [sesion_publica.json](sesion_publica.json) | Cinco rutas con HTTP 200. Servidor y túnel detenidos al finalizar |
 

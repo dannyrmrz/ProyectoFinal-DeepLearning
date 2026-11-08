@@ -38,7 +38,7 @@ Cada respuesta recibe un identificador que se utiliza al enviar una valoración 
 
 **10. ¿Qué resultados se obtuvieron en las pruebas públicas?**
 
-Se completaron tres consultas de humo y 20 solicitudes de carga por una URL pública, con el modelo real y sin errores de API. Todas las respuestas fueron de lectura. En la carga, seis respuestas superaron los 60 segundos. La sesión dejó 23 consultas automáticas y cero votos en los registros del servicio.
+El 7 de noviembre se completaron tres consultas de humo y 20 solicitudes de carga por una URL pública, sin errores de API. Todas las respuestas fueron de lectura y seis respuestas de carga superaron los 60 segundos. El 8 de noviembre se realizó una sesión con cinco participantes externos confirmados, que registraron cinco votos positivos sobre cinco consultas distintas. Las valoraciones representan utilidad percibida y se conservan por separado de los resultados de acierto por ejecución.
 
 **Referencias**
 

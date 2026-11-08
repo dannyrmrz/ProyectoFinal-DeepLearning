@@ -1,0 +1,6 @@
+codigo,fecha_utc_menos_06,id_consulta,pregunta,correcto,segundos_servicio
+U01,2026-11-08T15:54:57-06:00,0bad9629ee6b,¿Qué sucursal vendió más en total durante 2025?,True,45.05
+U02,2026-11-08T15:55:03-06:00,84b2055527a4,¿Qué sucursal vendió más en total durante 2025?,True,76.18
+U03,2026-11-08T15:56:10-06:00,a38333fb5ddc,¿Qué empleados ganan más que el promedio de su sucursal?,True,74.54
+U04,2026-11-08T15:57:23-06:00,1dfd8d33d265,¿Cuántos productos requieren receta médica?,True,55.49
+U05,2026-11-08T15:58:20-06:00,8c930b32289c,¿Cuál es el precio promedio de los productos por categoría?,True,66.81

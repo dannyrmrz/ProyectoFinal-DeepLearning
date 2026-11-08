@@ -125,13 +125,16 @@ Diagrama y decisiones de implementación: [docs/arquitectura.md](docs/arquitectu
 | Pruebas locales con las dependencias fijadas | 34 aprobadas. Registro en [verificacion_local.txt](evidencias/verificacion_local.txt) |
 | Prueba de humo con tres preguntas por la URL pública | Aprobada, tres respuestas HTTP 200 y consultas de lectura. Detalle en [prueba_humo.txt](evidencias/prueba_humo.txt) |
 | Carga ligera de 20 solicitudes, dos a la vez | Completada sin errores ni bloqueos. Detalle en [resumen_carga.md](evidencias/resumen_carga.md) y [prueba_carga.csv](evidencias/prueba_carga.csv) |
-| Descarga de salud, métricas y registros públicos | Disponible en [evidencias/](evidencias/), con `listo` en verdadero, 23 solicitudes, cero errores y cero votos |
+| Salud, métricas y registros de las pruebas del 7 de noviembre | Disponibles en [evidencias/](evidencias/), con `listo` en verdadero, 23 solicitudes, cero errores y cero votos |
+| Sesión con cinco participantes externos del 8 de noviembre | Cinco votos positivos sobre cinco consultas distintas. Detalle en [sesiones_usuarios.md](evidencias/sesiones_usuarios.md) y [registros de la sesión](evidencias/uso_usuarios_20261108/) |
 
-El método y los archivos de respaldo están en [evidencias/README.md](evidencias/README.md). Las mediciones de esta sección corresponden a solicitudes automáticas por la API.
+El método y los archivos de respaldo están en [evidencias/README.md](evidencias/README.md). Las pruebas de humo y carga utilizaron solicitudes automáticas. La sesión con participantes se conserva en archivos separados.
 
 Las tres respuestas de humo llegaron en 23.193, 27.847 y 33.844 segundos desde el cliente. En la carga, la latencia p50 fue de 50.838 segundos y la p95 fue de 61.596 segundos. Seis de las 20 respuestas superaron el objetivo de menos de 60 segundos.
 
 Se utilizó el modelo con el adapter B en fp32 y `PRECARGAR=1`. La sesión registró 23 consultas automáticas de lectura y ningún voto. Estas pruebas acreditan funcionamiento público y generación de SQL. El entorno y el cierre de los procesos quedaron registrados en [entorno.json](evidencias/entorno.json) y [sesion_publica.json](evidencias/sesion_publica.json).
+
+El 8 de noviembre se realizó una sesión con cinco personas externas, confirmadas por la coordinación de la sesión. Se registraron once consultas, incluidas dos de diagnóstico, y cinco votos positivos sobre cinco consultas distintas. Las valoraciones miden utilidad percibida y no sustituyen la validación del SQL por ejecución. El servidor y el túnel se cerraron a las 16:01:52, UTC−06:00.
 
 **Instrucciones de ejecución local**
 

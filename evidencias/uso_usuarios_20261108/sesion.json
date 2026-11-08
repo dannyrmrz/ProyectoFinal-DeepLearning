@@ -1,0 +1,20 @@
+{
+  "url": "https://miller-committee-firmware-shortly.trycloudflare.com",
+  "fecha_descarga": "2026-11-08T16:01:43-06:00",
+  "participantes_externos_confirmados": 5,
+  "confirmacion": "Cinco personas distintas ajenas al equipo, confirmadas por la coordinacion de la sesion",
+  "consultas_diagnostico": [
+    {
+      "id": "cc0b7f57b51f",
+      "tipo": "diagnostico_automatico",
+      "inicio": "2026-11-08T15:42:12-06:00"
+    },
+    {
+      "id": "57e8ef1ef0e0",
+      "tipo": "diagnostico_automatico_tareas",
+      "inicio": "2026-11-08T15:49:49-06:00"
+    }
+  ],
+  "cierre": "2026-11-08T16:01:52-06:00",
+  "servidor_y_tunel_detenidos": true
+}
