@@ -6,3 +6,16 @@ Comando: .venv\Scripts\python.exe -m pytest -q
 ................................                                         [100%]
 32 passed in 9.15s
 Código de salida: 0
+
+Verificación del 8 de noviembre de 2026, 15:48, UTC−06:00
+Cambio: recepción de consultas mediante tareas y recuperación de respuestas al recargar la interfaz
+Comando: .venv\Scripts\python.exe -m pytest -q
+34 passed in 19.88s
+Código de salida: 0
+Comprobación adicional: sintaxis del JavaScript de la interfaz validada con node --check
+Comprobación pública del 8 de noviembre de 2026, 15:49 a 15:50, UTC−06:00
+POST /api/tareas respondió HTTP 202 en 0.664 segundos
+Las consultas de progreso respondieron HTTP 200 y cada petición tardó menos de un segundo
+Se recuperó SQL de lectura mediante la tarea, con identificador de respuesta 57e8ef1ef0e0
+Tiempo de generación: 58.92 segundos. Tiempo completo de la comprobación: 61.119 segundos
+Esta consulta corresponde a un diagnóstico automático de la interfaz

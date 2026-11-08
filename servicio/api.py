@@ -3,6 +3,7 @@ import threading
 import time
 import uuid
 from contextlib import asynccontextmanager
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
@@ -13,6 +14,9 @@ from . import modelo, registro
 from .sql_util import es_solo_lectura
 
 CARPETA = Path(__file__).parent
+_cola = ThreadPoolExecutor(max_workers=1)
+_tareas = {}
+_candado_tareas = threading.Lock()
 
 
 class Solicitud(BaseModel):
@@ -61,6 +65,41 @@ def api_sql(s: Solicitud):
     return consultar(s.esquema, s.pregunta)
 
 
+def _procesar_tarea(id_: str, solicitud: Solicitud):
+    with _candado_tareas:
+        _tareas[id_] = {"estado": "procesando"}
+    try:
+        respuesta = consultar(solicitud.esquema, solicitud.pregunta)
+        resultado = {"estado": "completada", "respuesta": respuesta}
+    except Exception:
+        resultado = {"estado": "error", "error": "No se pudo generar la consulta. Intenta nuevamente."}
+    with _candado_tareas:
+        _tareas[id_] = resultado
+
+
+@app.post("/api/tareas", status_code=202)
+def api_crear_tarea(s: Solicitud):
+    id_ = uuid.uuid4().hex
+    with _candado_tareas:
+        activas = sum(t["estado"] in ("en_cola", "procesando") for t in _tareas.values())
+        if activas >= 10:
+            raise HTTPException(429, "El servicio está ocupado. Intenta en unos minutos.")
+        if len(_tareas) >= 100:
+            anterior = next(k for k, v in _tareas.items() if v["estado"] in ("completada", "error"))
+            del _tareas[anterior]
+        _tareas[id_] = {"estado": "en_cola"}
+    _cola.submit(_procesar_tarea, id_, s)
+    return {"id": id_, "estado": "en_cola"}
+
+
+@app.get("/api/tareas/{id_}")
+def api_obtener_tarea(id_: str):
+    with _candado_tareas:
+        if id_ not in _tareas:
+            raise HTTPException(404, "La solicitud ya no está disponible. Genera la consulta nuevamente.")
+        return dict(_tareas[id_])
+
+
 @app.post("/api/feedback")
 def api_feedback(v: Voto):
     return votar(v.id, v.correcto, v.comentario)
@@ -88,4 +127,4 @@ def api_ejemplo():
 
 @app.get("/")
 def inicio():
-    return FileResponse(CARPETA / "index.html")
+    return FileResponse(CARPETA / "index.html", headers={"Cache-Control": "no-store"})

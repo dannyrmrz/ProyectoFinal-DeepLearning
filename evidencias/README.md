@@ -9,7 +9,7 @@ La evidencia disponible incluye la validación del modelo, la prueba de humo y l
 | Contexto, planificación y supuestos | [docs/contexto.md](../docs/contexto.md) | Disponible |
 | Resultados de calidad y latencia en CPU | [resumen.csv](../evaluacion/resultados/resumen.csv) y [validación](../docs/modelo_y_validacion.md) | Disponibles, con la limitación de cronología documentada |
 | Cinco preguntas para usuarios | [preguntas_ejemplo.md](preguntas_ejemplo.md) | Disponibles y vinculadas a las referencias existentes |
-| Verificación local del repositorio | [verificacion_local.txt](verificacion_local.txt) | 32 pruebas aprobadas con las versiones fijadas. Python 3.13.2 |
+| Verificación local del repositorio | [verificacion_local.txt](verificacion_local.txt) | 34 pruebas aprobadas con las versiones fijadas. Python 3.13.2 |
 | Prueba de humo por la URL pública | [prueba_humo.txt](prueba_humo.txt) y [humo_resultados.json](humo_resultados.json) | Aprobada. Tres consultas completadas con HTTP 200 y SQL de lectura |
 | Carga ligera de 20 solicitudes, dos a la vez | [prueba_carga.csv](prueba_carga.csv) y [resumen_carga.md](resumen_carga.md) | Completada. Cero errores, cero bloqueos y seis respuestas de 60 segundos o más |
 | Estado del modelo durante la comprobación | [salud.json](salud.json) | Descargado de la URL pública, con `listo` en verdadero, adapter activo y fp32 |

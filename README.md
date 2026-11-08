@@ -91,7 +91,7 @@ Método, análisis y comparación con T4: [validación completa](docs/modelo_y_v
 
 **6. Herramientas y arquitectura**
 
-El usuario abre una página HTML publicada mediante Cloudflare Tunnel. La página envía el esquema y la pregunta a FastAPI. El modelo genera SQL, se aplica el filtro de lectura y se devuelve la respuesta. La consulta y el voto se registran en JSONL para calcular las métricas.
+El usuario abre una página HTML publicada mediante Cloudflare Tunnel. La página envía el esquema y la pregunta a FastAPI y recibe un identificador de tarea. Se consulta su estado mediante peticiones breves hasta obtener el SQL. Así se evita mantener abierta una conexión durante toda la espera cuando coinciden varios usuarios. Se aplica el filtro de lectura y la consulta y el voto se registran en JSONL para calcular las métricas.
 
 | Componente | Función |
 |---|---|
@@ -107,6 +107,8 @@ El usuario abre una página HTML publicada mediante Cloudflare Tunnel. La págin
 | GET | `/` | Interfaz web |
 | GET | `/api/ejemplo` | Esquema de farmacia |
 | POST | `/api/sql` | Recibir `esquema` y `pregunta`, devolver `id`, `sql`, `solo_lectura` y `segundos` |
+| POST | `/api/tareas` | Recibir el esquema y la pregunta de la interfaz, devolver un identificador con HTTP 202 |
+| GET | `/api/tareas/{id}` | Consultar el estado de la tarea y recuperar su respuesta al terminar |
 | POST | `/api/feedback` | Registrar `id`, `correcto` y un `comentario` opcional |
 | GET | `/api/salud` | Consultar carga y configuración del modelo |
 | GET | `/api/metricas` | Consultar solicitudes, errores, latencias, bloqueos y votos acumulados |
@@ -120,7 +122,7 @@ Diagrama y decisiones de implementación: [docs/arquitectura.md](docs/arquitectu
 |---|---|
 | Validación del modelo por API en CPU | Disponible en [evaluacion/resultados/](evaluacion/resultados/) |
 | Esquema y cinco preguntas de uso | Disponibles en [preguntas_ejemplo.md](evidencias/preguntas_ejemplo.md) |
-| Pruebas locales con las dependencias fijadas | 32 aprobadas. Registro en [verificacion_local.txt](evidencias/verificacion_local.txt) |
+| Pruebas locales con las dependencias fijadas | 34 aprobadas. Registro en [verificacion_local.txt](evidencias/verificacion_local.txt) |
 | Prueba de humo con tres preguntas por la URL pública | Aprobada, tres respuestas HTTP 200 y consultas de lectura. Detalle en [prueba_humo.txt](evidencias/prueba_humo.txt) |
 | Carga ligera de 20 solicitudes, dos a la vez | Completada sin errores ni bloqueos. Detalle en [resumen_carga.md](evidencias/resumen_carga.md) y [prueba_carga.csv](evidencias/prueba_carga.csv) |
 | Descarga de salud, métricas y registros públicos | Disponible en [evidencias/](evidencias/), con `listo` en verdadero, 23 solicitudes, cero errores y cero votos |

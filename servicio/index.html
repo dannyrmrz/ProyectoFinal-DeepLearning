@@ -63,8 +63,71 @@ let idActual = "";
 
 const estado = (texto, aviso = false) => { $("estado").textContent = texto; $("estado").className = aviso ? "aviso" : ""; };
 const votos = activo => { $("bien").disabled = $("mal").disabled = !activo; };
+const esperar = ms => new Promise(resolve => setTimeout(resolve, ms));
+const guardarTarea = id => {
+  try { sessionStorage.setItem("textosql_tarea", JSON.stringify({ id, pregunta: $("pregunta").value })); } catch {}
+};
+const borrarTarea = () => { try { sessionStorage.removeItem("textosql_tarea"); } catch {} };
 
-fetch("api/ejemplo").then(r => r.text()).then(t => $("esquema").value = t);
+async function pedir(ruta, opciones = {}) {
+  const controlador = new AbortController();
+  const limite = setTimeout(() => controlador.abort(), 20000);
+  try {
+    const r = await fetch(ruta, { ...opciones, cache: "no-store", signal: controlador.signal });
+    let datos;
+    try { datos = await r.json(); }
+    catch {
+      const error = new Error("El servicio no respondió correctamente. Intenta nuevamente.");
+      error.http = r.status;
+      throw error;
+    }
+    if (!r.ok) {
+      const mensaje = r.status === 422 ? "Revisa el esquema y la pregunta." :
+        typeof datos.detail === "string" ? datos.detail : "No se pudo completar la solicitud.";
+      const error = new Error(mensaje);
+      error.http = r.status;
+      throw error;
+    }
+    return datos;
+  } finally { clearTimeout(limite); }
+}
+
+async function seguirTarea(id) {
+  let fallos = 0;
+  while (true) {
+    let tarea;
+    try {
+      tarea = await pedir(`/api/tareas/${encodeURIComponent(id)}`);
+      fallos = 0;
+    } catch (e) {
+      if (e.http === 404) { borrarTarea(); throw e; }
+      if (++fallos > 5) throw new Error("Se perdió la conexión. Recarga la página para recuperar tu consulta.");
+      estado("Se interrumpió la conexión. Reintentando...", true);
+      await esperar(2000);
+      continue;
+    }
+    if (tarea.estado === "completada") {
+      const d = tarea.respuesta;
+      idActual = d.id;
+      if (d.solo_lectura) {
+        $("sql").textContent = d.sql;
+        estado(`Generada en ${d.segundos} s · id ${d.id}`);
+      } else {
+        estado("La consulta generada no era de solo lectura y se bloqueó.", true);
+      }
+      votos(true);
+      return;
+    }
+    if (tarea.estado === "error") { borrarTarea(); throw new Error(tarea.error); }
+    estado(tarea.estado === "en_cola" ? "Solicitud recibida. Esperando turno..." : "Generando la consulta. Puedes esperar en esta página.");
+    await esperar(2000);
+  }
+}
+
+fetch("/api/ejemplo", { cache: "no-store" }).then(r => {
+  if (!r.ok) throw new Error();
+  return r.text();
+}).then(t => $("esquema").value = t).catch(() => estado("No se pudo cargar el esquema. Recarga la página o pega tu esquema.", true));
 for (const p of PREGUNTAS) {
   const b = document.createElement("button");
   b.textContent = p;
@@ -76,26 +139,44 @@ $("generar").onclick = async () => {
   const esquema = $("esquema").value.trim(), pregunta = $("pregunta").value.trim();
   if (!esquema || !pregunta) return estado("Escribe el esquema y la pregunta.", true);
   $("generar").disabled = true; votos(false); $("sql").textContent = "";
-  estado("Generando… (en CPU tarda entre 10 y 40 s)");
+  idActual = "";
+  borrarTarea();
+  estado("Enviando la pregunta...");
   try {
-    const r = await fetch("api/sql", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ esquema, pregunta }) });
-    if (!r.ok) throw new Error(r.status === 422 ? "Entrada inválida (esquema ≤ 20,000 y pregunta ≤ 500 caracteres)." : `Error ${r.status}`);
-    const d = await r.json();
-    idActual = d.id;
-    if (d.solo_lectura) { $("sql").textContent = d.sql; estado(`Generada en ${d.segundos} s · id ${d.id}`); }
-    else estado("La consulta generada no era de solo lectura y se bloqueó.", true);
-    votos(true);
-  } catch (e) { estado(e.message, true); }
+    const tarea = await pedir("/api/tareas", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ esquema, pregunta }) });
+    guardarTarea(tarea.id);
+    await seguirTarea(tarea.id);
+  } catch (e) {
+    estado(e.name === "AbortError" || e instanceof TypeError ? "No se pudo conectar. Revisa tu conexión e intenta nuevamente." : e.message, true);
+  }
   $("generar").disabled = false;
 };
 
 const votar = correcto => async () => {
   votos(false);
-  const r = await fetch("api/feedback", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: idActual, correcto }) });
-  estado(r.ok ? "Gracias, registramos tu respuesta." : "No se pudo registrar el voto.", !r.ok);
+  try {
+    await pedir("/api/feedback", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: idActual, correcto }) });
+    borrarTarea();
+    estado("Gracias, registramos tu respuesta.");
+  } catch {
+    votos(true);
+    estado("No se pudo registrar el voto. Intenta nuevamente.", true);
+  }
 };
 $("bien").onclick = votar(true);
 $("mal").onclick = votar(false);
+
+async function recuperarTarea() {
+  let guardada;
+  try { guardada = JSON.parse(sessionStorage.getItem("textosql_tarea")); } catch { return; }
+  if (!guardada || typeof guardada.id !== "string") return;
+  $("pregunta").value = guardada.pregunta || "";
+  $("generar").disabled = true;
+  try { await seguirTarea(guardada.id); }
+  catch (e) { estado(e.message, true); }
+  finally { $("generar").disabled = false; }
+}
+recuperarTarea();
 </script>
 </body>
 </html>

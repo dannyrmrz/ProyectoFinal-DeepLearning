@@ -47,6 +47,7 @@ flowchart LR
 
 - **CPU en lugar de GPU.** En la corrida registrada con adapter B en fp32, la carga tomó 17.3 segundos y la latencia del servicio fue de 27.03 segundos en p50 y 42.79 segundos en p95. La memoria estable fue de 6.31 GB. Estas cifras corresponden a solicitudes secuenciales y no acreditan el tiempo completo por la URL pública.
 - **Una generación a la vez.** Un candado serializa `generate`. Las solicitudes simultáneas esperan su turno y requieren una prueba de carga para medir su efecto en la latencia.
+- **Espera de la interfaz.** La página crea una tarea con `POST /api/tareas` y consulta su estado mediante peticiones breves cada dos segundos. Las tareas se generan de una en una y su respuesta se conserva para recuperarla al recargar la página. Este flujo evita mantener una conexión abierta durante toda la generación. `POST /api/sql` conserva la respuesta directa para evaluación y otros clientes.
 - **Carga en segundo plano.** El modelo se carga al arrancar en un hilo; `/api/salud` dice `listo: false` mientras tanto, y la primera solicitud espera la carga.
 - **Sin ejecución de SQL.** El servicio no se conecta a la base del usuario: devuelve la consulta y el usuario la revisa y ejecuta. Por eso no se usa el ciclo de autocorrección con `ejecutar` del Proyecto 3. Así el servicio no guarda credenciales ni datos de la base del usuario.
 - **Privacidad del registro.** Se guardan la pregunta, el SQL y los comentarios de los votos. Del esquema solo se conserva su longitud. Los registros se revisan antes de compartirse y se utiliza información de demostración. Los endpoints de métricas y registros no tienen autenticación en esta versión.
@@ -57,6 +58,8 @@ flowchart LR
 | Método | Ruta | Entrada | Salida |
 |---|---|---|---|
 | POST | `/api/sql` | `{"esquema", "pregunta"}` | `{"id", "sql", "solo_lectura", "segundos"}` |
+| POST | `/api/tareas` | esquema y pregunta | identificador de tarea y HTTP 202 |
+| GET | `/api/tareas/{id}` | identificador en la ruta | estado y respuesta al completar la tarea |
 | POST | `/api/feedback` | `{"id", "correcto", "comentario"}` | evento registrado (404 si el `id` no existe) |
 | GET | `/api/salud` | | `{"listo", "modelo_base", "usar_adapter", "segundos_carga"}` |
 | GET | `/api/metricas` | | solicitudes, errores, latencia p50/p95, tasa de solo lectura, votos y tasa de 👍 |

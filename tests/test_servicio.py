@@ -1,4 +1,6 @@
 import os
+import threading
+import time
 
 import pytest
 from fastapi.testclient import TestClient
@@ -47,6 +49,70 @@ def test_salud_e_interfaz(cliente):
     assert "CREATE TABLE" in cliente.get("/api/ejemplo").text
     assert cliente.get("/api/salud").json()["modelo_base"].startswith("Qwen")
     assert "Generar SQL" in cliente.get("/").text
+    assert cliente.get("/").headers["cache-control"] == "no-store"
+
+
+def _esperar_tarea(cliente, id_):
+    limite = time.monotonic() + 5
+    while time.monotonic() < limite:
+        tarea = cliente.get(f"/api/tareas/{id_}").json()
+        if tarea["estado"] in ("completada", "error"):
+            return tarea
+        time.sleep(0.01)
+    pytest.fail("La tarea no terminó")
+
+
+def test_tareas_responden_sin_esperar_y_conservan_el_turno(cliente, monkeypatch):
+    monkeypatch.setattr(api, "_tareas", {})
+    iniciada, continuar = threading.Event(), threading.Event()
+    llamadas = []
+
+    def generar(esquema, pregunta):
+        llamadas.append(pregunta)
+        iniciada.set()
+        if not continuar.wait(10):
+            raise TimeoutError("La prueba no liberó la generación")
+        return "SELECT COUNT(*) FROM t"
+
+    monkeypatch.setattr(modelo, "generar_sql", generar)
+    datos = {"esquema": ESQUEMA, "pregunta": "¿Cuántas filas hay?"}
+    try:
+        primera = cliente.post("/api/tareas", json=datos)
+        assert primera.status_code == 202
+        assert iniciada.wait(3)
+        segunda = cliente.post("/api/tareas", json=datos)
+        assert segunda.status_code == 202
+        assert cliente.get(f"/api/tareas/{primera.json()['id']}").json()["estado"] == "procesando"
+        assert cliente.get(f"/api/tareas/{segunda.json()['id']}").json()["estado"] == "en_cola"
+        assert len(llamadas) == 1
+        assert registro.leer() == []
+    finally:
+        continuar.set()
+    resultado = _esperar_tarea(cliente, primera.json()["id"])["respuesta"]
+    assert resultado["sql"] == "SELECT COUNT(*) FROM t"
+    assert _esperar_tarea(cliente, segunda.json()["id"])["estado"] == "completada"
+    assert cliente.get(f"/api/tareas/{primera.json()['id']}").json()["respuesta"] == resultado
+    assert cliente.post("/api/feedback", json={"id": resultado["id"], "correcto": True}).status_code == 200
+    assert len(registro.leer()) == 3
+
+
+def test_tarea_fallida_permite_procesar_la_siguiente(cliente, monkeypatch):
+    monkeypatch.setattr(api, "_tareas", {})
+
+    def fallar(esquema, pregunta):
+        raise RuntimeError("detalle interno")
+
+    monkeypatch.setattr(modelo, "generar_sql", fallar)
+    datos = {"esquema": ESQUEMA, "pregunta": "¿Cuántas filas hay?"}
+    id_ = cliente.post("/api/tareas", json=datos).json()["id"]
+    tarea = _esperar_tarea(cliente, id_)
+    assert tarea["estado"] == "error"
+    assert "detalle interno" not in tarea["error"]
+    assert "detalle interno" in registro.leer()[0]["error"]
+    monkeypatch.setattr(modelo, "generar_sql", lambda e, p: "SELECT 1")
+    id_ = cliente.post("/api/tareas", json=datos).json()["id"]
+    assert _esperar_tarea(cliente, id_)["respuesta"]["sql"] == "SELECT 1"
+    assert cliente.get("/api/tareas/desconocida").status_code == 404
 
 
 @pytest.mark.parametrize("sql,esperado", [
