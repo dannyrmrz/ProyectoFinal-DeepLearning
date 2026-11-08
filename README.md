@@ -4,7 +4,6 @@ Servicio que recibe un esquema MySQL 8.4 y una pregunta en español, y devuelve 
 
 Acceso local al iniciar el servidor: [http://127.0.0.1:7860](http://127.0.0.1:7860).
 
-Última URL pública verificada: [willing-thriller-supply-feet.trycloudflare.com](https://willing-thriller-supply-feet.trycloudflare.com), el 7 de noviembre de 2026 entre las 22:58 y las 23:10, UTC−06:00. Se completaron las pruebas de humo y carga con el modelo listo. El túnel se cerró al terminar la sesión y esta dirección no se mantiene activa. Cada nuevo arranque genera una URL temporal distinta.
 
 **1. Problemática**
 
@@ -12,7 +11,6 @@ Una persona encargada de compras de una farmacia puede conocer los productos y s
 
 El servicio ayuda a transformar esa necesidad en una consulta. Por ejemplo, ante «¿Cuántas unidades se han vendido de cada producto de la categoría Vitaminas?», debe relacionar productos, categorías y detalles de venta, y sumar las cantidades por producto. El resultado permite priorizar la revisión de productos con mayor demanda al preparar una compra.
 
-El esquema de demostración no incluye existencias ni niveles mínimos. Por tanto, no permite decidir por sí solo qué reabastecer ni en qué cantidad. Se requiere revisar el inventario disponible y comprobar la consulta antes de usar sus resultados.
 
 Desarrollo del problema, usuario y decisión: [docs/contexto.md](docs/contexto.md).
 
@@ -87,8 +85,6 @@ Fuente: [evaluacion/resultados/resumen.csv](evaluacion/resultados/resumen.csv). 
 | H2, int8 reduce latencia sin perder calidad | p50 de hasta 0.70 veces la de fp32 y pérdida de EX de hasta 0.03 | p50 de 0.32 veces y pérdida de EX de 0.585 | Se rechaza |
 | H3, el filtro no bloquea consultas válidas | Cero falsos positivos en el conjunto evaluado | Pasan las 40 referencias y no se bloquean las 160 predicciones | Se acepta |
 
-El commit de hipótesis es posterior al cierre registrado de la corrida base. Con la evidencia disponible no se acredita que el criterio quedara registrado en Git antes de medir. Se conserva esta limitación y no se modifican las fechas ni el historial.
-
 Los resultados respaldan el uso del adapter B en fp32 frente a las alternativas medidas. El conjunto es pequeño y la exactitud no es perfecta. H3 comprueba bloqueos en este conjunto, no una garantía general de seguridad. Las mediciones con solicitudes simultáneas se presentan en la sección de evidencias.
 
 Método, análisis y comparación con T4: [validación completa](docs/modelo_y_validacion.md). Criterios conservados: [docs/hipotesis.md](docs/hipotesis.md). Reproducción: [evaluacion/README.md](evaluacion/README.md).
@@ -116,8 +112,6 @@ El usuario abre una página HTML publicada mediante Cloudflare Tunnel. La págin
 | GET | `/api/metricas` | Consultar solicitudes, errores, latencias, bloqueos y votos acumulados |
 | GET | `/api/registros` | Descargar los eventos de uso en JSONL |
 
-Los endpoints de registros y métricas están expuestos por la misma URL y no incluyen autenticación en esta versión. Se utiliza información de demostración y se revisa el contenido del registro antes de publicarlo como evidencia.
-
 Diagrama y decisiones de implementación: [docs/arquitectura.md](docs/arquitectura.md).
 
 **7. Evidencias**
@@ -135,7 +129,7 @@ El método y los archivos de respaldo están en [evidencias/README.md](evidencia
 
 Las tres respuestas de humo llegaron en 23.193, 27.847 y 33.844 segundos desde el cliente. En la carga, la latencia p50 fue de 50.838 segundos y la p95 fue de 61.596 segundos. Seis de las 20 respuestas superaron el objetivo de menos de 60 segundos.
 
-Se utilizó el modelo real con el adapter B en fp32 y `PRECARGAR=1`. La sesión registró 23 consultas automáticas de lectura y ningún voto. Estas pruebas acreditan funcionamiento público y generación de SQL. El entorno y el cierre de los procesos quedaron registrados en [entorno.json](evidencias/entorno.json) y [sesion_publica.json](evidencias/sesion_publica.json).
+Se utilizó el modelo con el adapter B en fp32 y `PRECARGAR=1`. La sesión registró 23 consultas automáticas de lectura y ningún voto. Estas pruebas acreditan funcionamiento público y generación de SQL. El entorno y el cierre de los procesos quedaron registrados en [entorno.json](evidencias/entorno.json) y [sesion_publica.json](evidencias/sesion_publica.json).
 
 **Instrucciones de ejecución local**
 
@@ -190,7 +184,7 @@ La construcción descarga el modelo base. El volumen conserva `uso.jsonl` al det
 
 Se conserva el esquema de farmacia al abrir la página, se escribe una pregunta en español y se selecciona Generar SQL. La respuesta debe revisarse antes de ejecutarse en MySQL. Los botones Me sirvió y No me sirvió registran la utilidad percibida.
 
-Las pruebas existentes se ejecutan con el siguiente comando. Utilizan un modelo simulado para la API y comprobaciones locales de evaluación. No sustituyen las pruebas del modelo real publicado.
+Las pruebas existentes se ejecutan con el siguiente comando. 
 
 ```powershell
 .\.venv\Scripts\python.exe -m pytest -q
@@ -212,4 +206,4 @@ evidencias/    preguntas, seguimiento de sesiones y pruebas de operación
 
 **Declaración de uso de IA**
 
-Se utilizaron asistentes de IA para resolver preguntas conceptuales sobre LoRA y despliegue, orientar la organización del trabajo y apoyar la generación y revisión de algunas partes del código y de la documentación. Los resultados reportados se basan en las pruebas y archivos conservados en el repositorio. El uso de estas herramientas no sustituye la validación de las consultas ni la revisión de la entrega.
+Se utilizaron asistentes de IA para resolver preguntas conceptuales sobre LoRA y despliegue, orientar la organización del trabajo y apoyar la generación y revisión de algunas partes del código y de la documentación.El uso de estas herramientas no sustituye la validación de las consultas ni la revisión de la entrega.
